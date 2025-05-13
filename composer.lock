@@ -4,7 +4,9 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
+
     "content-hash": "b291241b85d52cf736a7b2ae7b73dd83",
+
     "packages": [
         {
             "name": "composer/semver",
@@ -9492,6 +9494,7 @@
             "time": "2023-02-03T06:13:03+00:00"
         },
         {
+
             "name": "sebastian/version",
             "version": "3.0.2",
             "source": {
@@ -9675,6 +9678,7 @@
                     "type": "tidelift"
                 }
             ],
+
             "time": "2024-09-25T14:21:43+00:00"
         },
         {
