@@ -1,0 +1,76 @@
+/* assets/styles/app.css */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f9f9f9;
+    color: #333;
+    padding: 2rem;
+    line-height: 1.6;
+}
+
+h1, h2 {
+    color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+
+.list_posts {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    background: #fff;
+    border: 1px solid #ddd;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    position: relative;
+    list-style-type: none;
+}
+
+strong {
+    color: #34495e;
+}
+
+form {
+    margin-top: 1rem;
+}
+
+textarea {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+    resize: vertical;
+    margin-bottom: 1rem;
+    background-color: #fff;
+}
+
+button {
+    background-color: #3498db;
+    border: none;
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.2s ease-in-out;
+}
+
+button:hover {
+    background-color: #2980b9;
+}
+
+form[method="POST"][style*="inline"] {
+    display: inline;
+}
+
+form[method="POST"][style*="inline"] button {
+    background-color: #e74c3c;
+    margin-left: 1rem;
+}
+
+form[method="POST"][style*="inline"] button:hover {
+    background-color: #c0392b;
+}
