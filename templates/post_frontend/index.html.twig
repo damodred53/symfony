@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello PostFrontendController!{% endblock %}
+
+{% block body %}
+<style>
+    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+</style>
+
+<h1>Liste des posts depuis l’API</h1>
+
+<ul>
+    {% for post in posts %}
+        <li>
+            <strong>{{ post.author }}</strong> ({{ post.createdAt }}) :
+            {{ post.content }}
+
+            <form action="{{ path('app_post_frontend_edit', { 'id': post.id }) }}" method="GET" style="display:inline;">
+                <button type="submit">Editer</button>
+            </form>
+
+            <form action="{{ path('app_post_frontend_delete', { 'id': post.id }) }}" method="POST" style="display:inline;">
+                <button type="submit" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce post ?')">Supprimer</button>
+            </form>
+        </li>
+    {% else %}
+        <li>Aucun post trouvé.</li>
+    {% endfor %}
+</ul>
+
+<h2>Créer un nouveau post</h2>
+<form method="POST" action="{{ path('app_post_frontend_create') }}">
+    <label for="content">Contenu du post</label>
+    <textarea id="content" name="content" rows="4" required></textarea>
+
+    <button type="submit">Envoyer</button>
+</form>
+
+{% endblock %}
