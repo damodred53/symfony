@@ -10,10 +10,10 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class PostController extends AbstractController
 {
-    #[Route('/post', name: 'app_post')]
+    #[Route('/posts', name: 'app_post')]
     public function index(): Response
     {
-        return $this->render('post/index.html.twig', [
+        return $this->render('tweets/index.html.twig', [
             'controller_name' => 'PostController',
         ]);
     }
