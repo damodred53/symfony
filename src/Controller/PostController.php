@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,8 +18,32 @@ final class PostController extends AbstractController
         ]);
     }
 
-    #[Route('/tweets', name: 'app_tweets_list', methods: ['GET'])]
-    public function list(): Response
+    #[Route('/api/posts', name: 'app_posts_list', methods: ['GET'])]
+    #[OA\Get(
+        path: '/api/posts',
+        description: 'Retourne la liste des posts.',
+        summary: 'Liste des Posts',
+        tags: ['Posts'],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Liste des posts réussie',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(    // ✅ Ici il faut OA\Items, pas JsonContent
+                        type: 'object',
+                        properties: [
+                            new OA\Property(property: 'id', type: 'integer', example: 1),
+                            new OA\Property(property: 'author', type: 'string', example: 'Alice'),
+                            new OA\Property(property: 'content', type: 'string', example: 'Premier post de test.'),
+                            new OA\Property(property: 'createdAt', type: 'string', format: 'date-time', example: '2025-05-14 12:00:00'),
+                        ]
+                    )
+                )
+            )
+        ]
+    )]
+    public function list(): JsonResponse
     {
         $posts = [
             [
@@ -35,8 +60,6 @@ final class PostController extends AbstractController
             ],
         ];
 
-        return $this->render('home/tweet.html.twig', [
-            'posts' => $posts,
-        ]);
+        return $this->json($posts);
     }
 }
