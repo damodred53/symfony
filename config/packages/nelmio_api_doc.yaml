@@ -1,8 +1,8 @@
 nelmio_api_doc:
   documentation:
     info:
-      title: 'Documentation de test'
-      description: 'Exemple d’intégration Swagger avec Symfony'
+      title: 'Projet Twitter mais en mieux'
+      description: 'Credit : Kilian , Corentin , Florent'
       version: '1.0.0'
 
   areas:
