@@ -8,6 +8,7 @@ use Nelmio\ApiDocBundle\NelmioApiDocBundle;
 use Symfony\Bundle\DebugBundle\DebugBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
+use Symfony\Bundle\MakerBundle\MakerBundle;
 use Symfony\Bundle\MonologBundle\MonologBundle;
 use Symfony\Bundle\SecurityBundle\SecurityBundle;
 use Symfony\Bundle\TwigBundle\TwigBundle;
@@ -28,6 +29,7 @@ class Kernel extends BaseKernel
 
         yield new TwigBundle();
         yield new NelmioApiDocBundle();
+        yield new MakerBundle();
 
 
     }
