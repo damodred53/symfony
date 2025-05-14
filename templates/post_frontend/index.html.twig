@@ -12,16 +12,18 @@
 
 <ul>
     {% for post in posts %}
-        <li>
-            <strong>{{ post.author }}</strong> ({{ post.createdAt }}) :
-            {{ post.content }}
+        <li class="list_posts">
 
-            <form action="{{ path('app_post_frontend_edit', { 'id': post.id }) }}" method="GET" style="display:inline;">
-                <button type="submit">Editer</button>
-            </form>
+            <div>
+                <strong>{{ post.author }}</strong> ({{ post.createdAt }}) :
+            </div>
+            <div>
+                {{ post.content }}
+            </div>
 
-            <form action="{{ path('app_post_frontend_delete', { 'id': post.id }) }}" method="POST" style="display:inline;">
-                <button type="submit" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce post ?')">Supprimer</button>
+
+            <form class="deleting_form" action="{{ path('app_post_frontend_delete', { 'id': post.id }) }}" method="POST" style="display:inline;">
+                <button class="deleting_button" type="submit" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce post ?')">Supprimer</button>
             </form>
         </li>
     {% else %}
