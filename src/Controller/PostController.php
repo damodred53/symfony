@@ -9,16 +9,16 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class PostController extends AbstractController
 {
-    #[Route('/post', name: 'app_post')]
+    #[Route('/posts', name: 'app_post')]
     public function index(): Response
     {
-        return $this->render('post/index.html.twig', [
+        return $this->render('tweets/index.html.twig', [
             'controller_name' => 'PostController',
         ]);
     }
 
-    #[Route('/posts', name: 'app_posts_list', methods: ['GET'])]
-    public function list(): JsonResponse
+    #[Route('/tweets', name: 'app_tweets_list', methods: ['GET'])]
+    public function list(): Response
     {
         $posts = [
             [
@@ -35,6 +35,8 @@ final class PostController extends AbstractController
             ],
         ];
 
-        return $this->json($posts);
+        return $this->render('home/tweet.html.twig', [
+            'posts' => $posts,
+        ]);
     }
 }

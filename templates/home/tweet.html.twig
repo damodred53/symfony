@@ -3,5 +3,12 @@
 {% block title %} Projet symfony M1 Twitter {% endblock %}
 
 {%  block body  %}
-    Ceci est ma page avec les tweets
+    <ul>
+    {% for post in posts %}
+        <li>{{ post.author }} - {{ post.createdAt }} </li>
+        <div>{{post.content}}</div>
+    {% else %}
+        <li>Aucun produit trouvé.</li>
+    {% endfor %}
+</ul>
 {% endblock %}
