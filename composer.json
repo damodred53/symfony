@@ -20,11 +20,7 @@
         "symfony/flex": "^2.5.1",
         "symfony/form": "7.2.*",
         "symfony/framework-bundle": "7.2.*",
-<<<<<<< HEAD
-        "symfony/http-client": "7.2.*",
-=======
         "symfony/monolog-bundle": "^3.10",
->>>>>>> 29f2c150bb7f0f7a4544b0648a0829f529a359f4
         "symfony/runtime": "7.2.*",
         "symfony/security-csrf": "7.2.*",
         "symfony/twig-bundle": "7.2.*",
