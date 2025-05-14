@@ -26,6 +26,15 @@
             "migrations/.gitignore"
         ]
     },
+    "nelmio/api-doc-bundle": {
+        "version": "5.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "main",
+            "version": "3.0",
+            "ref": "c8e0c38e1a280ab9e37587a8fa32b251d5bc1c94"
+        }
+    },
     "symfony/console": {
         "version": "7.2",
         "recipe": {
@@ -103,6 +112,22 @@
         "files": [
             "config/packages/twig.yaml",
             "templates/base.html.twig"
+        ]
+    },
+    "symfony/webpack-encore-bundle": {
+        "version": "2.2",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "2.0",
+            "ref": "9ef5412a4a2a8415aca3a3f2b4edd3866aab9a19"
+        },
+        "files": [
+            "./assets/app.js",
+            "./assets/styles/app.css",
+            "./config/packages/webpack_encore.yaml",
+            "./package.json",
+            "./webpack.config.js"
         ]
     },
     "twig/extra-bundle": {

@@ -4,7 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="61cd041e-2866-4386-984c-53850554bcf0" name="Changes" comment="update docker-compose configuration and enhance workspace settings" />
+    <list default="true" id="61cd041e-2866-4386-984c-53850554bcf0" name="Changes" comment="Add initial project configuration files and .gitignore">
+      <change afterPath="$PROJECT_DIR$/config/packages/nelmio_api_doc.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/config/routes/nelmio_api_doc.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/php.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/php.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/composer.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/composer.lock" beforeDir="false" afterPath="$PROJECT_DIR$/composer.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Kernel.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Kernel.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/symfony.lock" beforeDir="false" afterPath="$PROJECT_DIR$/symfony.lock" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -12,11 +21,14 @@
   </component>
   <component name="ComposerSettings" synchronizationState="SYNCHRONIZE">
     <pharConfigPath>$PROJECT_DIR$/composer.json</pharConfigPath>
-    <execution />
+    <execution>
+      <phar pharPath="C:\Users\kilia\PhpstormProjects\symfonyv2\composer.phar" />
+    </execution>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="RESET_MODE" value="HARD" />
+    <option name="UPDATE_TYPE" value="REBASE" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
   &quot;lastFilter&quot;: {
@@ -30,7 +42,7 @@
     &quot;accountId&quot;: &quot;5e24f626-5fcf-47a0-81a5-53b2252d2dcb&quot;
   }
 }</component>
-  <component name="PhpWorkspaceProjectConfiguration" interpreter_name="/opt/homebrew/Cellar/php/8.4.6/bin/php">
+  <component name="PhpWorkspaceProjectConfiguration" interpreter_name="PHP">
     <include_path>
       <path value="$PROJECT_DIR$/vendor/symfony/yaml" />
       <path value="$PROJECT_DIR$/vendor/symfony/process" />
@@ -92,6 +104,16 @@
       <path value="$PROJECT_DIR$/vendor/doctrine/doctrine-migrations-bundle" />
       <path value="$PROJECT_DIR$/vendor/twig/extra-bundle 2" />
       <path value="$PROJECT_DIR$/vendor/symfony/translation-contracts 2" />
+      <path value="$PROJECT_DIR$/vendor/phpstan/phpdoc-parser" />
+      <path value="$PROJECT_DIR$/vendor/symfony/options-resolver" />
+      <path value="$PROJECT_DIR$/vendor/symfony/property-info" />
+      <path value="$PROJECT_DIR$/vendor/symfony/type-info" />
+      <path value="$PROJECT_DIR$/vendor/webmozart/assert" />
+      <path value="$PROJECT_DIR$/vendor/phpdocumentor/type-resolver" />
+      <path value="$PROJECT_DIR$/vendor/phpdocumentor/reflection-docblock" />
+      <path value="$PROJECT_DIR$/vendor/phpdocumentor/reflection-common" />
+      <path value="$PROJECT_DIR$/vendor/nelmio/api-doc-bundle" />
+      <path value="$PROJECT_DIR$/vendor/zircote/swagger-php" />
     </include_path>
   </component>
   <component name="ProjectColorInfo">{
@@ -105,16 +127,30 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "PHP Built-in Web Server.Unnamed.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "fix-conflct",
+    "git-widget-placeholder": "DevKilian",
+    "last_opened_file_path": "C:/Users/kilia/PhpstormProjects/symfonyv2/config/packages",
     "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\kilia\PhpstormProjects\symfonyv2\config\packages" />
+      <recent name="C:\Users\kilia\PhpstormProjects\symfonyv2\config\routes" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="Unnamed" type="PhpBuiltInWebServerConfigurationType" factoryName="PHP Built-in Web Server" nameIsGenerated="true" document_root="$PROJECT_DIR$/public">
+      <method v="2" />
+    </configuration>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -131,7 +167,6 @@
       <option name="presentableId" value="Default" />
       <updated>1747147883378</updated>
       <workItem from="1747147884528" duration="83000" />
-      <workItem from="1747205372930" duration="760000" />
     </task>
     <task id="LOCAL-00001" summary="Add initial project configuration files and .gitignore">
       <option name="closed" value="true" />
@@ -141,15 +176,7 @@
       <option name="project" value="LOCAL" />
       <updated>1747147914208</updated>
     </task>
-    <task id="LOCAL-00002" summary="update docker-compose configuration and enhance workspace settings">
-      <option name="closed" value="true" />
-      <created>1747206124751</created>
-      <option name="number" value="00002" />
-      <option name="presentableId" value="LOCAL-00002" />
-      <option name="project" value="LOCAL" />
-      <updated>1747206124751</updated>
-    </task>
-    <option name="localTasksCounter" value="3" />
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -168,7 +195,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Add initial project configuration files and .gitignore" />
-    <MESSAGE value="update docker-compose configuration and enhance workspace settings" />
-    <option name="LAST_COMMIT_MESSAGE" value="update docker-compose configuration and enhance workspace settings" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add initial project configuration files and .gitignore" />
   </component>
 </project>
