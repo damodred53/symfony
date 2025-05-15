@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Dto\Posts\PostDTO;
+use App\Dto\Comment\CommentDTO;
 use App\Entity\Post;
 use App\Repository\PostRepository;
 use App\Repository\UserRepository;
@@ -47,16 +49,7 @@ final class PostController extends AbstractController
     {
         $posts = $postRepository->findAll();
 
-        $data = [];
-
-        foreach ($posts as $post) {
-            $data[] = [
-                'id' => $post->getId(),
-                'content' => $post->getContent(),
-                'createdAt' => $post->getCreatedAt()?->format('Y-m-d H:i:s'),
-                'author' => $post->getAuthor()?->getUsername(),
-            ];
-        }
+        $data = array_map(fn(Post $post) => (new PostDTO($post))->toArray(), $posts);
 
         return $this->json($data);
     }
@@ -115,7 +108,7 @@ final class PostController extends AbstractController
 
         return $this->json([
             'message' => 'Post created successfully!',
-            'id' => $post->getId(),
+            'post' => (new PostDTO($post))->toArray(),
         ], 201);
     }
 
@@ -145,12 +138,7 @@ final class PostController extends AbstractController
     )]
     public function show(Post $post): JsonResponse
     {
-        return $this->json([
-            'id' => $post->getId(),
-            'content' => $post->getContent(),
-            'createdAt' => $post->getCreatedAt()?->format('Y-m-d H:i:s'),
-            'author' => $post->getAuthor()?->getUsername(),
-        ]);
+        return $this->json((new PostDTO($post))->toArray());
     }
 
     #[Route('/{id}', requirements: ['id' => '\d+'], name: 'update', methods: ['PATCH'])]
@@ -191,6 +179,7 @@ final class PostController extends AbstractController
 
         return $this->json([
             'message' => 'Post updated successfully!',
+            'post' => (new PostDTO($post))->toArray(),
         ]);
     }
 
@@ -265,16 +254,7 @@ final class PostController extends AbstractController
             ->getQuery()
             ->getResult();
 
-        $data = [];
-
-        foreach ($posts as $post) {
-            $data[] = [
-                'id' => $post->getId(),
-                'content' => $post->getContent(),
-                'createdAt' => $post->getCreatedAt()?->format('Y-m-d H:i:s'),
-                'author' => $post->getAuthor()?->getUsername(),
-            ];
-        }
+        $data = array_map(fn(Post $post) => (new PostDTO($post))->toArray(), $posts);
 
         return $this->json($data);
     }
@@ -315,24 +295,10 @@ final class PostController extends AbstractController
     )]
     public function showWithComments(Post $post): JsonResponse
     {
-        $commentsData = [];
-
-        foreach ($post->getComments() as $comment) {
-            $commentsData[] = [
-                'id' => $comment->getId(),
-                'author' => $comment->getAuthor()?->getUsername(),
-                'content' => $comment->getContent(),
-                'createdAt' => $comment->getCreatedAt()?->format('Y-m-d H:i:s'),
-            ];
-        }
+        $commentsData = array_map(fn($comment) => (new CommentDTO($comment))->toArray(), $post->getComments()->toArray());
 
         return $this->json([
-            'post' => [
-                'id' => $post->getId(),
-                'content' => $post->getContent(),
-                'author' => $post->getAuthor()?->getUsername(),
-                'createdAt' => $post->getCreatedAt()?->format('Y-m-d H:i:s'),
-            ],
+            'post' => (new PostDTO($post))->toArray(),
             'comments' => $commentsData,
         ]);
     }
