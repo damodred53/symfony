@@ -17,5 +17,9 @@ yarn-error.log
 ###< symfony/webpack-encore-bundle ###
 
 .idea/php.xml
-/.idea/workspace.xml
 /.idea/encore.iml
+
+.env
+.idea/workspace.xml
+/config/jwt/private.pem
+/config/jwt/public.pem
