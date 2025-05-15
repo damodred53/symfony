@@ -119,7 +119,7 @@ final class PostController extends AbstractController
         ], 201);
     }
 
-    #[Route('/{id}', name: 'show', methods: ['GET'])]
+    #[Route('/{id}', requirements: ['id' => '\d+'], name: 'show', methods: ['GET'])]
     #[OA\Get(
         description: 'Retourne un post spécifique par son ID.',
         summary: 'Voir un post spécifique',
@@ -153,7 +153,7 @@ final class PostController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'update', methods: ['PATCH'])]
+    #[Route('/{id}', requirements: ['id' => '\d+'], name: 'update', methods: ['PATCH'])]
     #[OA\Patch(
         description: 'Modifie un post existant.',
         summary: 'Modifier un post',
@@ -194,7 +194,7 @@ final class PostController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'delete', methods: ['DELETE'])]
+    #[Route('/{id}', requirements: ['id' => '\d+'],  name: 'delete', methods: ['DELETE'])]
     #[OA\Delete(
         description: 'Supprime un post existant.',
         summary: 'Supprimer un post',
@@ -217,5 +217,65 @@ final class PostController extends AbstractController
         return $this->json([
             'message' => 'Post deleted successfully!',
         ]);
+    }
+
+    #[Route('/search', name: 'search', methods: ['GET'])]
+    #[OA\Get(
+        description: 'Recherche de posts par mot-clé.',
+        summary: 'Rechercher des posts',
+        security: [['bearer' => []]],
+        parameters: [
+            new OA\Parameter(
+                name: 'keyword',
+                in: 'query',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Résultats de la recherche',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(
+                        properties: [
+                            new OA\Property(property: 'id', type: 'integer', example: 1),
+                            new OA\Property(property: 'author', type: 'string', example: 'Alice'),
+                            new OA\Property(property: 'content', type: 'string', example: 'Contenu du post.'),
+                            new OA\Property(property: 'createdAt', type: 'string', format: 'date-time', example: '2025-05-14 12:00:00'),
+                        ],
+                        type: 'object'
+                    )
+                )
+            )
+        ]
+    )]
+    public function search(Request $request, PostRepository $postRepository): JsonResponse
+    {
+        $keyword = $request->query->get('keyword');
+
+        if (!$keyword) {
+            return $this->json(['error' => 'Keyword is required'], 400);
+        }
+
+        $posts = $postRepository->createQueryBuilder('p')
+            ->where('LOWER(p.content) LIKE LOWER(:keyword)')
+            ->setParameter('keyword', '%' . $keyword . '%')
+            ->getQuery()
+            ->getResult();
+
+        $data = [];
+
+        foreach ($posts as $post) {
+            $data[] = [
+                'id' => $post->getId(),
+                'content' => $post->getContent(),
+                'createdAt' => $post->getCreatedAt()?->format('Y-m-d H:i:s'),
+                'author' => $post->getAuthor()?->getUsername(),
+            ];
+        }
+
+        return $this->json($data);
     }
 }
