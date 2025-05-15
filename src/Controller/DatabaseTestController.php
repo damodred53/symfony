@@ -77,6 +77,7 @@ class DatabaseTestController extends AbstractController
         return $this->json([
             'username' => $data['username'],
             'email' => $data['email'],
+            'roles' => $data['roles'],
         ]);
     }
 
