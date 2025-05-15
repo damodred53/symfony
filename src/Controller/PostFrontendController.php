@@ -14,7 +14,7 @@ final class PostFrontendController extends AbstractController
     #[Route('/api/post/frontend', name: 'app_post_frontend')]
     public function index(HttpClientInterface $client): Response
     {
-        $response = $client->request('GET', 'http://localhost:80/api/posts');
+        $response = $client->request('GET', 'http://localhost/api/jwt/posts');
         $posts = $response->toArray();
 
         return $this->render('post_frontend/index.html.twig', [
