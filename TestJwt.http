@@ -1,0 +1,8 @@
+﻿POST localhost/api/login HTTP/1.1
+Host: your-domain.com
+Content-Type: application/json
+
+{
+    "username": "test",
+    "password": "password123"
+}

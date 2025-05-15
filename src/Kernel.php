@@ -11,6 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Bundle\MakerBundle\MakerBundle;
 use Symfony\Bundle\MonologBundle\MonologBundle;
 use Symfony\Bundle\SecurityBundle\SecurityBundle;
+use Lexik\Bundle\JWTAuthenticationBundle\LexikJWTAuthenticationBundle;
 use Symfony\Bundle\TwigBundle\TwigBundle;
 use Symfony\Bundle\WebProfilerBundle\WebProfilerBundle;
 use Symfony\Component\HttpKernel\Kernel as BaseKernel;
@@ -25,8 +26,14 @@ class Kernel extends BaseKernel
         yield new FrameworkBundle();
         yield new DoctrineBundle();
         yield new DoctrineMigrationsBundle();
+        yield new WebProfilerBundle();
 
 
+        yield new SecurityBundle();
+
+
+
+        yield new LexikJWTAuthenticationBundle();
         yield new TwigBundle();
         yield new NelmioApiDocBundle();
         yield new MakerBundle();
