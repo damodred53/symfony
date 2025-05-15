@@ -278,4 +278,62 @@ final class PostController extends AbstractController
 
         return $this->json($data);
     }
+
+    #[Route('/{id}/with-comments', name: 'show_with_comments', methods: ['GET'])]
+    #[OA\Get(
+        description: 'Retourne un post avec tous ses commentaires associés.',
+        summary: 'Voir un post + ses commentaires',
+        security: [['bearer' => []]],
+        parameters: [
+            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Post + commentaires récupérés',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'post', type: 'object', properties: [
+                            new OA\Property(property: 'id', type: 'integer', example: 1),
+                            new OA\Property(property: 'content', type: 'string', example: 'Mon premier post.'),
+                            new OA\Property(property: 'author', type: 'string', example: 'test'),
+                            new OA\Property(property: 'createdAt', type: 'string', format: 'date-time', example: '2025-05-15 12:26:16'),
+                        ]),
+                        new OA\Property(property: 'comments', type: 'array', items: new OA\Items(
+                            properties: [
+                                new OA\Property(property: 'id', type: 'integer'),
+                                new OA\Property(property: 'author', type: 'string'),
+                                new OA\Property(property: 'content', type: 'string'),
+                                new OA\Property(property: 'createdAt', type: 'string', format: 'date-time'),
+                            ],
+                            type: 'object'
+                        ))
+                    ]
+                )
+            )
+        ]
+    )]
+    public function showWithComments(Post $post): JsonResponse
+    {
+        $commentsData = [];
+
+        foreach ($post->getComments() as $comment) {
+            $commentsData[] = [
+                'id' => $comment->getId(),
+                'author' => $comment->getAuthor()?->getUsername(),
+                'content' => $comment->getContent(),
+                'createdAt' => $comment->getCreatedAt()?->format('Y-m-d H:i:s'),
+            ];
+        }
+
+        return $this->json([
+            'post' => [
+                'id' => $post->getId(),
+                'content' => $post->getContent(),
+                'author' => $post->getAuthor()?->getUsername(),
+                'createdAt' => $post->getCreatedAt()?->format('Y-m-d H:i:s'),
+            ],
+            'comments' => $commentsData,
+        ]);
+    }
 }

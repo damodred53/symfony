@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20250513141816 extends AbstractMigration
+final class Version20250515121519 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -21,7 +21,16 @@ final class Version20250513141816 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->addSql(<<<'SQL'
-            DROP SEQUENCE users_id_seq CASCADE
+            CREATE TABLE comment (id SERIAL NOT NULL, author_id INT NOT NULL, post_id INT NOT NULL, content TEXT NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, PRIMARY KEY(id))
+        SQL);
+        $this->addSql(<<<'SQL'
+            CREATE INDEX IDX_9474526CF675F31B ON comment (author_id)
+        SQL);
+        $this->addSql(<<<'SQL'
+            CREATE INDEX IDX_9474526C4B89032C ON comment (post_id)
+        SQL);
+        $this->addSql(<<<'SQL'
+            COMMENT ON COLUMN comment.created_at IS '(DC2Type:datetime_immutable)'
         SQL);
         $this->addSql(<<<'SQL'
             CREATE TABLE log (id SERIAL NOT NULL, author_id INT NOT NULL, action VARCHAR(255) NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, PRIMARY KEY(id))
@@ -51,13 +60,16 @@ final class Version20250513141816 extends AbstractMigration
             COMMENT ON COLUMN "user".updated_at IS '(DC2Type:datetime_immutable)'
         SQL);
         $this->addSql(<<<'SQL'
+            ALTER TABLE comment ADD CONSTRAINT FK_9474526CF675F31B FOREIGN KEY (author_id) REFERENCES "user" (id) NOT DEFERRABLE INITIALLY IMMEDIATE
+        SQL);
+        $this->addSql(<<<'SQL'
+            ALTER TABLE comment ADD CONSTRAINT FK_9474526C4B89032C FOREIGN KEY (post_id) REFERENCES post (id) NOT DEFERRABLE INITIALLY IMMEDIATE
+        SQL);
+        $this->addSql(<<<'SQL'
             ALTER TABLE log ADD CONSTRAINT FK_8F3F68C5F675F31B FOREIGN KEY (author_id) REFERENCES "user" (id) NOT DEFERRABLE INITIALLY IMMEDIATE
         SQL);
         $this->addSql(<<<'SQL'
             ALTER TABLE post ADD CONSTRAINT FK_5A8A6C8DF675F31B FOREIGN KEY (author_id) REFERENCES "user" (id) NOT DEFERRABLE INITIALLY IMMEDIATE
-        SQL);
-        $this->addSql(<<<'SQL'
-            DROP TABLE users
         SQL);
     }
 
@@ -68,22 +80,19 @@ final class Version20250513141816 extends AbstractMigration
             CREATE SCHEMA public
         SQL);
         $this->addSql(<<<'SQL'
-            CREATE SEQUENCE users_id_seq INCREMENT BY 1 MINVALUE 1 START 1
+            ALTER TABLE comment DROP CONSTRAINT FK_9474526CF675F31B
         SQL);
         $this->addSql(<<<'SQL'
-            CREATE TABLE users (id SERIAL NOT NULL, username VARCHAR(255) NOT NULL, email VARCHAR(255) NOT NULL, password VARCHAR(600) NOT NULL, profile_picture VARCHAR(600) DEFAULT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, updated_at DATE DEFAULT NULL, PRIMARY KEY(id))
-        SQL);
-        $this->addSql(<<<'SQL'
-            COMMENT ON COLUMN users.created_at IS '(DC2Type:datetime_immutable)'
-        SQL);
-        $this->addSql(<<<'SQL'
-            COMMENT ON COLUMN users.updated_at IS '(DC2Type:date_immutable)'
+            ALTER TABLE comment DROP CONSTRAINT FK_9474526C4B89032C
         SQL);
         $this->addSql(<<<'SQL'
             ALTER TABLE log DROP CONSTRAINT FK_8F3F68C5F675F31B
         SQL);
         $this->addSql(<<<'SQL'
             ALTER TABLE post DROP CONSTRAINT FK_5A8A6C8DF675F31B
+        SQL);
+        $this->addSql(<<<'SQL'
+            DROP TABLE comment
         SQL);
         $this->addSql(<<<'SQL'
             DROP TABLE log
