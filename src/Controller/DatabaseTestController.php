@@ -15,6 +15,7 @@ class DatabaseTestController extends AbstractController
         path: '/api/test-db-connection',
         description: 'Returns a boolean indicating whether the database connection is successful.',
         summary: 'Test SQL connection',
+        security: [['bearer' => []]],
         tags: ['Database']
     )]
     #[OA\Response(
