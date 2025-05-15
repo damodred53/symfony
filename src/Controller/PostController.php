@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Dto\Posts\PostDTO;
+use App\Dto\Comment\CommentDTO;
 use App\Entity\Post;
 use App\Repository\PostRepository;
 use App\Repository\UserRepository;
@@ -47,16 +49,7 @@ final class PostController extends AbstractController
     {
         $posts = $postRepository->findAll();
 
-        $data = [];
-
-        foreach ($posts as $post) {
-            $data[] = [
-                'id' => $post->getId(),
-                'content' => $post->getContent(),
-                'createdAt' => $post->getCreatedAt()?->format('Y-m-d H:i:s'),
-                'author' => $post->getAuthor()?->getUsername(),
-            ];
-        }
+        $data = array_map(fn(Post $post) => (new PostDTO($post))->toArray(), $posts);
 
         return $this->json($data);
     }
@@ -115,11 +108,11 @@ final class PostController extends AbstractController
 
         return $this->json([
             'message' => 'Post created successfully!',
-            'id' => $post->getId(),
+            'post' => (new PostDTO($post))->toArray(),
         ], 201);
     }
 
-    #[Route('/{id}', name: 'show', methods: ['GET'])]
+    #[Route('/{id}', requirements: ['id' => '\d+'], name: 'show', methods: ['GET'])]
     #[OA\Get(
         description: 'Retourne un post spécifique par son ID.',
         summary: 'Voir un post spécifique',
@@ -145,15 +138,10 @@ final class PostController extends AbstractController
     )]
     public function show(Post $post): JsonResponse
     {
-        return $this->json([
-            'id' => $post->getId(),
-            'content' => $post->getContent(),
-            'createdAt' => $post->getCreatedAt()?->format('Y-m-d H:i:s'),
-            'author' => $post->getAuthor()?->getUsername(),
-        ]);
+        return $this->json((new PostDTO($post))->toArray());
     }
 
-    #[Route('/{id}', name: 'update', methods: ['PATCH'])]
+    #[Route('/{id}', requirements: ['id' => '\d+'], name: 'update', methods: ['PATCH'])]
     #[OA\Patch(
         description: 'Modifie un post existant.',
         summary: 'Modifier un post',
@@ -191,10 +179,11 @@ final class PostController extends AbstractController
 
         return $this->json([
             'message' => 'Post updated successfully!',
+            'post' => (new PostDTO($post))->toArray(),
         ]);
     }
 
-    #[Route('/{id}', name: 'delete', methods: ['DELETE'])]
+    #[Route('/{id}', requirements: ['id' => '\d+'],  name: 'delete', methods: ['DELETE'])]
     #[OA\Delete(
         description: 'Supprime un post existant.',
         summary: 'Supprimer un post',
@@ -216,6 +205,101 @@ final class PostController extends AbstractController
 
         return $this->json([
             'message' => 'Post deleted successfully!',
+        ]);
+    }
+
+    #[Route('/search', name: 'search', methods: ['GET'])]
+    #[OA\Get(
+        description: 'Recherche de posts par mot-clé.',
+        summary: 'Rechercher des posts',
+        security: [['bearer' => []]],
+        parameters: [
+            new OA\Parameter(
+                name: 'keyword',
+                in: 'query',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Résultats de la recherche',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(
+                        properties: [
+                            new OA\Property(property: 'id', type: 'integer', example: 1),
+                            new OA\Property(property: 'author', type: 'string', example: 'Alice'),
+                            new OA\Property(property: 'content', type: 'string', example: 'Contenu du post.'),
+                            new OA\Property(property: 'createdAt', type: 'string', format: 'date-time', example: '2025-05-14 12:00:00'),
+                        ],
+                        type: 'object'
+                    )
+                )
+            )
+        ]
+    )]
+    public function search(Request $request, PostRepository $postRepository): JsonResponse
+    {
+        $keyword = $request->query->get('keyword');
+
+        if (!$keyword) {
+            return $this->json(['error' => 'Keyword is required'], 400);
+        }
+
+        $posts = $postRepository->createQueryBuilder('p')
+            ->where('LOWER(p.content) LIKE LOWER(:keyword)')
+            ->setParameter('keyword', '%' . $keyword . '%')
+            ->getQuery()
+            ->getResult();
+
+        $data = array_map(fn(Post $post) => (new PostDTO($post))->toArray(), $posts);
+
+        return $this->json($data);
+    }
+
+    #[Route('/{id}/with-comments', name: 'show_with_comments', methods: ['GET'])]
+    #[OA\Get(
+        description: 'Retourne un post avec tous ses commentaires associés.',
+        summary: 'Voir un post + ses commentaires',
+        security: [['bearer' => []]],
+        parameters: [
+            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Post + commentaires récupérés',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'post', type: 'object', properties: [
+                            new OA\Property(property: 'id', type: 'integer', example: 1),
+                            new OA\Property(property: 'content', type: 'string', example: 'Mon premier post.'),
+                            new OA\Property(property: 'author', type: 'string', example: 'test'),
+                            new OA\Property(property: 'createdAt', type: 'string', format: 'date-time', example: '2025-05-15 12:26:16'),
+                        ]),
+                        new OA\Property(property: 'comments', type: 'array', items: new OA\Items(
+                            properties: [
+                                new OA\Property(property: 'id', type: 'integer'),
+                                new OA\Property(property: 'author', type: 'string'),
+                                new OA\Property(property: 'content', type: 'string'),
+                                new OA\Property(property: 'createdAt', type: 'string', format: 'date-time'),
+                            ],
+                            type: 'object'
+                        ))
+                    ]
+                )
+            )
+        ]
+    )]
+    public function showWithComments(Post $post): JsonResponse
+    {
+        $commentsData = array_map(fn($comment) => (new CommentDTO($comment))->toArray(), $post->getComments()->toArray());
+
+        return $this->json([
+            'post' => (new PostDTO($post))->toArray(),
+            'comments' => $commentsData,
         ]);
     }
 }
