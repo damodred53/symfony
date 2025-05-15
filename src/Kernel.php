@@ -37,6 +37,7 @@ class Kernel extends BaseKernel
         yield new TwigBundle();
         yield new NelmioApiDocBundle();
         yield new MakerBundle();
+        yield new MonologBundle();
 
 
     }
