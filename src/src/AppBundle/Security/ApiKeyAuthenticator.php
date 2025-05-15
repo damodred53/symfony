@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 // src/AppBundle/Security/ApiKeyAuthenticator.php
 namespace AppBundle\Security;
