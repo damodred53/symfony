@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Dto\Posts\PostDTO;
 use App\Entity\Post;
 use App\Repository\PostRepository;
 use App\Repository\UserRepository;
@@ -13,7 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/api/posts', name: 'api_posts_')]
-#[OA\Tag(name: 'Posts')] // ➔ Groupe Swagger : Posts
+#[OA\Tag(name: 'Posts')]
 final class PostController extends AbstractController
 {
     #[Route('', name: 'list', methods: ['GET'])]
@@ -43,16 +44,7 @@ final class PostController extends AbstractController
     {
         $posts = $postRepository->findAll();
 
-        $data = [];
-
-        foreach ($posts as $post) {
-            $data[] = [
-                'id' => $post->getId(),
-                'content' => $post->getContent(),
-                'createdAt' => $post->getCreatedAt()?->format('Y-m-d H:i:s'),
-                'author' => $post->getAuthor()?->getUsername(),
-            ];
-        }
+        $data = array_map(fn(Post $post) => (new PostDTO($post))->toArray(), $posts);
 
         return $this->json($data);
     }
@@ -110,7 +102,7 @@ final class PostController extends AbstractController
 
         return $this->json([
             'message' => 'Post created successfully!',
-            'id' => $post->getId(),
+            'post' => (new PostDTO($post))->toArray(),
         ], 201);
     }
 
@@ -139,12 +131,7 @@ final class PostController extends AbstractController
     )]
     public function show(Post $post): JsonResponse
     {
-        return $this->json([
-            'id' => $post->getId(),
-            'content' => $post->getContent(),
-            'createdAt' => $post->getCreatedAt()?->format('Y-m-d H:i:s'),
-            'author' => $post->getAuthor()?->getUsername(),
-        ]);
+        return $this->json((new PostDTO($post))->toArray());
     }
 
     #[Route('/{id}', name: 'update', methods: ['PATCH'])]
@@ -184,6 +171,7 @@ final class PostController extends AbstractController
 
         return $this->json([
             'message' => 'Post updated successfully!',
+            'post' => (new PostDTO($post))->toArray(),
         ]);
     }
 
