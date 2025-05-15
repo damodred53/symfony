@@ -30,9 +30,10 @@ final class PostFrontendController extends AbstractController
 
         if ($content) {
             $response = $client->request('POST', 'http://localhost:80/api/posts', [
-                'json' => [
-                    'content' => $content,
+                'headers' => [
+                    'Content-Type' => 'application/json',
                 ],
+                'body' => json_encode(['content' => $content]),
             ]);
 
             if ($response->getStatusCode() === 201) {
@@ -40,43 +41,6 @@ final class PostFrontendController extends AbstractController
             }
 
             $this->addFlash('error', 'Une erreur est survenue lors de la création du post.');
-        }
-
-        return $this->redirectToRoute('app_post_frontend');
-    }
-
-    // Editer un post
-    #[Route('/api/post/frontend/edit/{id}', name: 'app_post_frontend_edit', methods: ['GET'])]
-    public function edit(HttpClientInterface $client, int $id): Response
-    {
-        // Appel à l'API backend pour obtenir le post à éditer
-        $response = $client->request('GET', 'http://localhost:80/api/posts/'.$id);
-        $post = $response->toArray();
-
-        // Rendu du formulaire d'édition
-        return $this->render('post_frontend/edit.html.twig', [
-            'post' => $post,
-        ]);
-    }
-
-    // Soumettre l'édition d'un post
-    #[Route('/api/post/frontend/update/{id}', name: 'app_post_frontend_update', methods: ['POST'])]
-    public function update(HttpClientInterface $client, Request $request, int $id): Response
-    {
-        $content = $request->request->get('content');
-
-        if ($content) {
-            $response = $client->request('PUT', 'http://localhost:80/api/posts/'.$id, [
-                'json' => [
-                    'content' => $content,
-                ],
-            ]);
-
-            if ($response->getStatusCode() === 200) {
-                return $this->redirectToRoute('app_post_frontend');
-            }
-
-            $this->addFlash('error', 'Une erreur est survenue lors de la mise à jour du post.');
         }
 
         return $this->redirectToRoute('app_post_frontend');
