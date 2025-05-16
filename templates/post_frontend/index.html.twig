@@ -22,7 +22,7 @@
             </div>
 
 
-            <form class="deleting_form" action="{{ path('app_post_frontend_delete', { 'id': post.id }) }}" method="POST" style="display:inline;">
+            <form class="deleting_form" action="{{ path('app_post_frontend_delete', { 'id': post.id }) }}" method="POST" >
                 <button class="deleting_button" type="submit" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce post ?')">Supprimer</button>
             </form>
         </li>
