@@ -50,7 +50,6 @@ final class PostFrontendController extends AbstractController
             $errors['content'] = 'Le contenu est requis.';
         }
 
-        // ✅ Toujours recharger les posts pour les afficher même en cas d’erreur
         $postsResponse = $client->request('GET', 'http://localhost/api/jwt/posts');
         $posts = $postsResponse->toArray();
 
@@ -119,25 +118,5 @@ final class PostFrontendController extends AbstractController
         $query = $request->query->get('query');
 
         return $this->redirectToRoute('app_post_frontend_search', $query ? ['query' => $query] : []);
-    }
-
-    #[Route('/post/{postId}/unlike', name: 'post_unlike_api_proxy', methods: ['POST'])]
-    public function unlikeProxy(
-        int $postId,
-        HttpClientInterface $client,
-        Request $request
-    ): Response {
-        $response = $client->request('DELETE', "http://localhost/api/jwt/likes/{$postId}", [
-            'headers' => [
-                'Authorization' => 'Bearer ' . $this->jwtToken,
-            ]
-        ]);
-
-        // 👇 Ajoute ceci pour voir la réponse de l'API
-        $status = $response->getStatusCode();
-        $body = $response->getContent(false); // false = ne jette pas d'exception sur erreurs HTTP
-
-        dump($status, $body);
-        exit;
     }
 }
