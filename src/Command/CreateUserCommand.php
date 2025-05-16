@@ -32,6 +32,7 @@ class CreateUserCommand extends Command
             // Mot de passe hashé
             $hashedPassword = $this->passwordHasher->hashPassword($user, 'password123');
             $user->setPassword($hashedPassword);
+            $user->setRoles(['ROLE_ADMIN']);
 
             $this->em->persist($user);
             $this->em->flush();

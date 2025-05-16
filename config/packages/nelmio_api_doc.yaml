@@ -1,19 +1,22 @@
 nelmio_api_doc:
-  documentation:
-    info:
-      title: 'Projet Twitter mais en mieux'
-      description: 'Credit : Kilian , Corentin , Florent'
-      version: '1.0.0'
-    components:
-        securitySchemes:
-            bearer:
-                type: http
-                scheme: bearer
-                bearerFormat: JWT
+    documentation:
+        info:
+            title: 'Projet Twitter mais en mieux'
+            description: 'Credit : Kilian , Corentin , Florent'
+            version: '1.0.0'
+        components:
+            securitySchemes:
+                bearer:
+                    type: http
+                    scheme: bearer
+                    bearerFormat: JWT
+                apiToken:
+                    type: apiKey
+                    in: header
+                    name: X-API-TOKEN  
         security:
-            -   bearerAuth: [ ]
-  areas:
-    default:
-      path_patterns: [ ^/api ]  # ← pour inclure toutes les routes
-      
- 
+            - bearerAuth: []
+    
+    areas:
+        default:
+            path_patterns: [ ^/api ]
