@@ -24,7 +24,7 @@ final class PostController extends AbstractController
     #[OA\Get(
         description: 'Retourne tous les posts publiés.',
         summary: 'Liste des posts',
-        security: [['bearer' => []]],
+        security: [['bearer' => [], 'apiToken' => []]],
         responses: [
             new OA\Response(
                 response: 200,

@@ -1,6 +1,7 @@
-﻿POST localhost/api/login HTTP/1.1
+﻿POST http://localhost/api/login HTTP/1.1
 Host: your-domain.com
 Content-Type: application/json
+X-API-TOKEN: LeSuperToken123
 
 {
     "username": "test",

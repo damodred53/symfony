@@ -34,6 +34,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
+    #[ORM\Column(type: 'json')]
+    private array $roles = [];
+
 
     /**
      * @var Collection<int, Post>
@@ -58,6 +61,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\OneToMany(targetEntity: Like::class, mappedBy: 'author')]
     private Collection $likes;
+
 
     public function __construct()
     {
@@ -211,13 +215,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getRoles(): array
     {
-        return ['ROLE_USER'];
+        $roles = $this->roles;
+
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
     }
 
     public function eraseCredentials(): void
     {
     }
 
+
+    public function setRoles(array $roles): self
+    {
+        $this->roles = $roles;
+        return $this;
+    }
     /**
      * @return Collection<int, Comment>
      */
