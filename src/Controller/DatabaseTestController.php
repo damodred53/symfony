@@ -51,7 +51,7 @@ class DatabaseTestController extends AbstractController
         path: '/api/jwt/GetDataToken',
         description: 'Retrieve the JWT data token.',
         summary: 'Get JWT Token Data',
-        security: [['bearer' => []]],
+        security: ['bearer' => [],'apiKey' => []],
         tags: ['JWT']
     )]
     #[OA\Response(

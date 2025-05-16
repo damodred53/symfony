@@ -26,28 +26,44 @@ final class PostFrontendController extends AbstractController
         ]);
     }
 
-    // Créer un nouveau post
     #[Route('/api/post/frontend/create', name: 'app_post_frontend_create', methods: ['POST'])]
     public function create(HttpClientInterface $client, Request $request): Response
     {
         $content = $request->request->get('content');
+        $errors = [];
 
+        // On tente la création
         if ($content) {
             $response = $client->request('POST', 'http://localhost/api/jwt/posts', [
-                'json' => [
-                    'content' => $content,
-                ],
+                'json' => ['content' => $content],
             ]);
 
             if ($response->getStatusCode() === 201) {
                 return $this->redirectToRoute('app_post_frontend');
             }
 
-            $this->addFlash('error', 'Une erreur est survenue lors de la création du post.');
+            if ($response->getStatusCode() === 400) {
+                $data = $response->toArray(false);
+                $errors = $data['errors'] ?? ['global' => $data['error'] ?? 'Erreur inconnue.'];
+            } else {
+                $errors['global'] = 'Une erreur est survenue lors de la création du post.';
+            }
+        } else {
+            $errors['content'] = 'Le contenu est requis.';
         }
 
-        return $this->redirectToRoute('app_post_frontend');
+        // ✅ Toujours recharger les posts pour les afficher même en cas d’erreur
+        $postsResponse = $client->request('GET', 'http://localhost/api/jwt/posts');
+        $posts = $postsResponse->toArray();
+
+        return $this->render('post_frontend/index.html.twig', [
+            'errors' => $errors,
+            'posts' => $posts,
+            'old_content' => $content
+        ]);
     }
+
+
 
     // Supprimer un post
     #[Route('/api/post/frontend/delete/{id}', name: 'app_post_frontend_delete', methods: ['POST'])]
