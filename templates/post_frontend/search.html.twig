@@ -1,0 +1,58 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Recherche de posts{% endblock %}
+
+{% block body %}
+    <h2>Recherche de posts</h2>
+
+    <form method="get" action="{{ path('app_post_frontend_search') }}">
+        <input type="text" name="query" placeholder="Rechercher un mot..." value="{{ query|default('') }}">
+        <button type="submit">Rechercher</button>
+    </form>
+
+    <hr>
+
+    {% if query is defined and query is not empty %}
+        <h3>Résultats pour : "{{ query }}"</h3>
+
+        {% if posts is empty %}
+            <p>Aucun post trouvé.</p>
+        {% else %}
+            <ul>
+                {% for post in posts %}
+                    <li>
+                        <strong>{{ post.author }}</strong> : {{ post.content }}
+                        ({{ post.likeCount }} likes)
+
+                        {% if post.updatedAt is not empty %}
+                            — Modifié le {{ post.updatedAt }}
+                        {% else %}
+                            — Créé le {{ post.createdAt }}
+                        {% endif %}
+
+                        {# Bouton Like / Unlike via formulaire #}
+                        <form method="post" action="{{ path('post_like_toggle', { postId: post.id }) }}">
+                            <button type="submit">Like</button>
+                        </form>
+
+                        {# Commentaires #}
+                        {% if post.comments is defined and post.comments is not empty %}
+                            <ul>
+                                {% for comment in post.comments %}
+                                    <li>
+                                        <em>{{ comment.author }}</em> : {{ comment.content }}
+                                        {% if comment.createdAt is defined %}
+                                            — le {{ comment.createdAt }}
+                                        {% endif %}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p>Aucun commentaire.</p>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endif %}
+{% endblock %}
