@@ -1,6 +1,54 @@
 .logo {
-    width: 5rem;
-    height: 5rem;
+    width: 3rem;
+    height: 4rem;
     border: 5px solid black;
     border-radius: 25%;
+}
+
+/* Banner style élégant, sobre et moderne */
+.custom-navbar {
+    background-color: #121212; /* noir profond */
+    border-bottom: 1px solid #2c2c2c;
+    padding: 1rem 0;
+}
+
+.navbar-title {
+    color: #ffffff;
+    font-size: 1.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.navbar-logo {
+    height: 40px;
+    margin-left: 0.5rem;
+}
+
+.custom-link {
+    color: #dddddd !important;
+    margin-left: 1rem;
+    font-weight: 500;
+    transition: color 0.3s ease-in-out, border-bottom 0.3s ease-in-out;
+    position: relative;
+    padding-bottom: 4px;
+}
+
+.custom-link:hover {
+    color: #e50914 !important; /* Rouge élégant Netflix-style */
+}
+
+.custom-link::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    width: 0%;
+    background-color: #e50914;
+    transition: width 0.3s ease-in-out;
+}
+
+.custom-link:hover::after {
+    width: 100%;
 }

@@ -13,13 +13,31 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-/**
- * Controller class for managing user-related operations such as listing, creating, editing, deleting, and authenticating users.
- */
+#[OA\Tag(name: "Users", description: "Operations about users")]
 #[Route('/api/user')]
 final class UserController extends AbstractController
 {
     #[Route(name: 'app_user_index', methods: ['GET'])]
+    #[OA\Get(
+        path: "/api/user",
+        summary: "List all users",
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "List of users",
+                content: new OA\JsonContent(
+                    type: "array",
+                    items: new OA\Items(
+                        properties: [
+                            new OA\Property(property: "id", type: "integer"),
+                            new OA\Property(property: "username", type: "string"),
+                            new OA\Property(property: "email", type: "string"),
+                        ]
+                    )
+                )
+            )
+        ]
+    )]
     public function index(UserRepository $userRepository): JsonResponse
     {
         $users = $userRepository->findAll();
@@ -34,9 +52,36 @@ final class UserController extends AbstractController
     }
 
     #[Route('/new', name: 'app_user_new', methods: ['POST'])]
+    #[OA\Post(
+        path: "/api/user/new",
+        summary: "Create a new user",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ["username", "email", "password"],
+                properties: [
+                    new OA\Property(property: "username", type: "string"),
+                    new OA\Property(property: "email", type: "string", format: "email"),
+                    new OA\Property(property: "password", type: "string", format: "password"),
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 201,
+                description: "User created",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string"),
+                        new OA\Property(property: "id", type: "integer")
+                    ]
+                )
+            ),
+            new OA\Response(response: 400, description: "Missing fields")
+        ]
+    )]
     public function new(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
-
         $data = json_decode($request->getContent(), true);
 
         $username = $data['username'] ?? null;
@@ -62,7 +107,31 @@ final class UserController extends AbstractController
         ], JsonResponse::HTTP_CREATED);
     }
 
-     #[Route('/{id<\d+>}', name: 'app_user_show', methods: ['GET'])]
+    #[Route('/{id<\d+>}', name: 'app_user_show', methods: ['GET'])]
+    #[OA\Get(
+        path: "/api/user/{id}",
+        summary: "Get a single user by ID",
+        parameters: [
+            new OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer"))
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "User found",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "id", type: "integer"),
+                        new OA\Property(property: "username", type: "string"),
+                        new OA\Property(property: "email", type: "string"),
+                        new OA\Property(property: "profilePicture", type: "string", nullable: true),
+                        new OA\Property(property: "createdAt", type: "string"),
+                        new OA\Property(property: "updatedAt", type: "string", nullable: true),
+                    ]
+                )
+            ),
+            new OA\Response(response: 404, description: "User not found")
+        ]
+    )]
     public function show(User $user): JsonResponse
     {
         return new JsonResponse([
@@ -76,6 +145,7 @@ final class UserController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_user_edit', methods: ['GET', 'POST'])]
+    // Cette route est orientée HTML, donc inutile de la documenter dans Swagger pour une API REST
     public function edit(Request $request, User $user, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(UserForm::class, $user);
@@ -94,16 +164,14 @@ final class UserController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_user_delete', methods: ['POST'])]
+    // Idem : route CSRF de formulaire HTML, non exposée via Swagger REST
     public function delete(Request $request, User $user, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$user->getId(), $request->getPayload()->getString('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $user->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($user);
             $entityManager->flush();
         }
 
         return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
     }
-
-
-
 }
