@@ -3,36 +3,36 @@
 {% block title %}User{% endblock %}
 
 {% block body %}
-    <h1>User</h1>
+    <h1 class="mb-4">Détails de l'utilisateur</h1>
 
-    <table class="table">
+    <table class="table table-dark table-bordered table-striped rounded overflow-hidden shadow-sm">
         <tbody>
             <tr>
-                <th>Id</th>
+                <th scope="row">Id</th>
                 <td>{{ user.id }}</td>
             </tr>
             <tr>
-                <th>Username</th>
+                <th scope="row">Nom d'utilisateur</th>
                 <td>{{ user.username }}</td>
             </tr>
             <tr>
-                <th>Email</th>
+                <th scope="row">Email</th>
                 <td>{{ user.email }}</td>
             </tr>
             <tr>
-                <th>CreatedAt</th>
+                <th scope="row">Créé le</th>
                 <td>{{ user.createdAt ? user.createdAt|date('Y-m-d H:i:s') : '' }}</td>
             </tr>
             <tr>
-                <th>UpdatedAt</th>
+                <th scope="row">Mis à jour le</th>
                 <td>{{ user.updatedAt ? user.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
             </tr>
         </tbody>
     </table>
 
-    <a href="{{ path('app_user_frontend_index') }}">back to list</a>
-
-    <a href="{{ path('app_user_frontend_edit', {'id': user.id}) }}">edit</a>
-
-    {{ include('user_frontend/delete.html.twig') }}
+    <div class="mt-4 d-flex gap-3 flex-wrap">
+        <a class="btn custom-btn" href="{{ path('app_user_frontend_index') }}" class="btn custom-btn"><p> Retour à la liste</p></a>
+        <a class="btn custom-btn" class="link" href="{{ path('app_user_frontend_edit', {'id': user.id}) }}" class="btn custom-btn"><p> Modifier</p></a>
+        {{ include('user_frontend/delete.html.twig')  }}
+    </div>
 {% endblock %}
