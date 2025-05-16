@@ -47,6 +47,10 @@ final class HomeController extends AbstractController
 
                 $data = $response->toArray(false);
                 dump($data);
+                $session = $request->getSession();
+                $session->set('jwt_token', $token);
+                return $this->redirect('http:localhost:8080/api/post/frontend');
+
 
             } catch (TransportExceptionInterface $e) {
                 dump("Erreur réseau : " . $e->getMessage());
