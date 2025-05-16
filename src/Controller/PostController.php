@@ -2,8 +2,10 @@
 
 namespace App\Controller;
 
+use App\Dto\Posts\PostCreateDTO;
 use App\Dto\Posts\PostDTO;
-use App\Dto\Comment\CommentDTO;
+use App\Dto\Posts\PostUpdateDTO;
+use App\Dto\Posts\PostWithCommentsDTO;
 use App\Entity\Post;
 use App\Repository\PostRepository;
 use App\Repository\UserRepository;
@@ -13,6 +15,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 #[Route('/api/jwt/posts', name: 'api_posts_')]
 #[OA\Tag(name: 'Posts')]
@@ -82,33 +85,37 @@ final class PostController extends AbstractController
             )
         ]
     )]
-    public function create(Request $request, EntityManagerInterface $entityManager, UserRepository $userRepository): JsonResponse
+    public function create(Request $request, ValidatorInterface $validator, EntityManagerInterface $em, UserRepository $userRepository): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
+        $dto = PostCreateDTO::fromArray($data);
 
-        $content = $data['content'] ?? null;
+        $errors = $validator->validate($dto);
 
-        if (!$content) {
-            return $this->json(['error' => 'Content is required'], 400);
+        if (count($errors) > 0) {
+            $messages = [];
+            foreach ($errors as $error) {
+                $messages[$error->getPropertyPath()] = $error->getMessage();
+            }
+            return $this->json(['errors' => $messages], 400);
         }
 
         $user = $userRepository->findOneBy([]);
-
         if (!$user) {
-            return $this->json(['error' => 'No user found to assign as author'], 400);
+            return $this->json(['error' => 'User not found'], 400);
         }
 
         $post = new Post();
-        $post->setContent($content);
+        $post->setContent($dto->content);
         $post->setCreatedAt(new \DateTimeImmutable());
         $post->setAuthor($user);
 
-        $entityManager->persist($post);
-        $entityManager->flush();
+        $em->persist($post);
+        $em->flush();
 
         return $this->json([
-            'message' => 'Post created successfully!',
-            'post' => (new PostDTO($post))->toArray(),
+            'message' => 'Post created',
+            'post' => (new PostDTO($post))->toArray()
         ], 201);
     }
 
@@ -150,7 +157,7 @@ final class PostController extends AbstractController
             required: true,
             content: new OA\JsonContent(
                 properties: [
-                    new OA\Property(property: 'content', type: 'string', example: 'Nouveau contenu du post.'),
+                    new OA\Property(property: 'content', type: 'string', example: 'Nouveau contenu du post.')
                 ],
                 type: 'object'
             )
@@ -162,25 +169,58 @@ final class PostController extends AbstractController
             new OA\Response(
                 response: 200,
                 description: 'Post modifié avec succès',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'message', type: 'string', example: 'Post updated successfully!'),
+                        new OA\Property(
+                            property: 'post',
+                            type: 'object',
+                            properties: [
+                                new OA\Property(property: 'id', type: 'integer', example: 1),
+                                new OA\Property(property: 'content', type: 'string', example: 'Contenu modifié du post'),
+                                new OA\Property(property: 'author', type: 'string', example: 'Alice'),
+                                new OA\Property(property: 'createdAt', type: 'string', format: 'date-time', example: '2025-05-14 12:00:00'),
+                                new OA\Property(property: 'likeCount', type: 'integer', example: 3),
+                            ]
+                        )
+                    ],
+                    type: 'object'
+                )
+            ),
+            new OA\Response(
+                response: 400,
+                description: 'Erreur de validation ou JSON invalide'
             )
         ]
     )]
-    public function update(Request $request, Post $post, EntityManagerInterface $entityManager): JsonResponse
-    {
-        $data = json_decode($request->getContent(), true);
+    public function update(Request $request, Post $post, ValidatorInterface $validator, EntityManagerInterface $entityManager): JsonResponse {
+        try {
+            $data = json_decode($request->getContent(), true);
 
-        if (isset($data['content'])) {
-            $post->setContent($data['content']);
+            $dto = PostUpdateDTO::fromArray($data);
+
+            $errors = $validator->validate($dto);
+            if (count($errors) > 0) {
+                $messages = [];
+                foreach ($errors as $error) {
+                    $messages[$error->getPropertyPath()] = $error->getMessage();
+                }
+
+                return $this->json(['errors' => $messages], 400);
+            }
+
+            $post->setContent($dto->content);
+            $post->setUpdatedAt(new \DateTimeImmutable());
+
+            $entityManager->flush();
+
+            return $this->json([
+                'message' => 'Post updated successfully!',
+                'post' => (new PostDTO($post))->toArray(),
+            ]);
+        } catch (\JsonException $e) {
+            return $this->json(['error' => 'Invalid JSON body'], 400);
         }
-
-        $post->setCreatedAt(new \DateTimeImmutable());
-
-        $entityManager->flush();
-
-        return $this->json([
-            'message' => 'Post updated successfully!',
-            'post' => (new PostDTO($post))->toArray(),
-        ]);
     }
 
     #[Route('/{id}', requirements: ['id' => '\d+'],  name: 'delete', methods: ['DELETE'])]
@@ -295,11 +335,6 @@ final class PostController extends AbstractController
     )]
     public function showWithComments(Post $post): JsonResponse
     {
-        $commentsData = array_map(fn($comment) => (new CommentDTO($comment))->toArray(), $post->getComments()->toArray());
-
-        return $this->json([
-            'post' => (new PostDTO($post))->toArray(),
-            'comments' => $commentsData,
-        ]);
+        return $this->json((new PostWithCommentsDTO($post))->toArray());
     }
 }
