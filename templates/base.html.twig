@@ -8,6 +8,8 @@
         {% block stylesheets %}
             {{ encore_entry_link_tags('app') }}
             <link rel="stylesheet" href="{{ asset('styles/posts.css') }}">
+            <link rel="stylesheet" href="{{ asset('styles/logo.css') }}">
+            <link rel="stylesheet" href="{{ asset('styles/banner.css') }}">
         {% endblock %}
 
         {% block javascripts %}
@@ -18,11 +20,14 @@
     <body>
 
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <div class="container-fluid">
+            <div class="container-fluid banner">
                 <a class="navbar-brand" href="#">Notre twitter</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
+                <div>
+                    <img class="logo" alt="logo de notre site" src="{{ asset('assets/logo_symfony.png') }}" />
+                </div>
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav">
                         <li class="nav-item">
@@ -35,7 +40,7 @@
                             <a class="nav-link" href="{{ path(name = 'app_user_frontend_index') }}">Liste des utilisateurs</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ path(name = 'app_user_new') }}">Votre compte</a>
+                            <a class="nav-link" href="{{ path(name = 'app_user_new') }}">Votre profil</a>
                         </li>
 
                     </ul>
