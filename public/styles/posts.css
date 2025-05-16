@@ -74,3 +74,8 @@ form[method="POST"][style*="inline"] button {
 form[method="POST"][style*="inline"] button:hover {
     background-color: #c0392b;
 }
+
+.title {
+    font-size: 15px;
+    margin-right: 3rem;
+}
