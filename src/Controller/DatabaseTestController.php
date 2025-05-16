@@ -11,12 +11,12 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class DatabaseTestController extends AbstractController
 {
-    #[Route('/api/test-db-connection', name: 'api_test_db_connection', methods: ['GET'])]
+    #[Route('/api/jwt/test-db-connection', name: 'api_test_db_connection', methods: ['GET'])]
     #[OA\Get(
         path: '/api/test-db-connection',
         description: 'Returns a boolean indicating whether the database connection is successful.',
         summary: 'Test SQL connection',
-        security: [['bearer' => []]],
+        security: [['bearer' => []],['apiKey' => []]],
         tags: ['Database']
     )]
     #[OA\Response(

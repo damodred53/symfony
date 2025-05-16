@@ -10,6 +10,8 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use App\Repository\TokenDbRepository;
+use Symfony\Component\HttpFoundation\JsonResponse;
+
 
 class ApiTokenAuthenticator extends AbstractAuthenticator
 {
@@ -22,8 +24,10 @@ class ApiTokenAuthenticator extends AbstractAuthenticator
 
     public function supports(Request $request): ?bool
     {
-        // Active pour les routes commençant par /api/service/
-        return str_starts_with($request->getPathInfo(), '/api/service/');
+        $path = $request->getPathInfo();
+
+
+        return str_starts_with($path, '/api') && $path !== '/api/doc';
     }
 
     public function authenticate(Request $request): \Symfony\Component\Security\Http\Authenticator\Passport\Passport

@@ -15,7 +15,7 @@ nelmio_api_doc:
                     in: header
                     name: X-API-TOKEN  
         security:
-            - bearerAuth: []  
+            - bearerAuth: []
     
     areas:
         default:
