@@ -22,7 +22,7 @@ final class CommentController extends AbstractController
     #[OA\Get(
         description: 'Retourne tous les commentaires.',
         summary: 'Liste des commentaires',
-        security: [['bearer' => []]],
+        security: ['bearer' => [], 'apiKey' => []],
         responses: [
             new OA\Response(
                 response: 200,
@@ -60,6 +60,7 @@ final class CommentController extends AbstractController
 
         return $this->json($data);
     }
+
 
     #[Route('', name: 'create', methods: ['POST'])]
     #[OA\Post(

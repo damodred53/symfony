@@ -1,5 +1,5 @@
-﻿POST http://localhost/api/login HTTP/1.1
-Host: your-domain.com
+﻿### Authentification (récupération du token)
+POST http://localhost/api/login
 Content-Type: application/json
 X-API-TOKEN: LeSuperToken123
 
@@ -7,3 +7,12 @@ X-API-TOKEN: LeSuperToken123
     "username": "test",
     "password": "password123"
 }
+
+> {% client.global.set("auth_token", response.body.token); %}
+
+###
+
+### Requête protégée avec le token récupéré
+GET http://localhost/api/jwt/comments
+Authorization: Bearer {{auth_token}}
+X-API-TOKEN: LeSuperToken123
