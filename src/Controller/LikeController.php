@@ -56,7 +56,13 @@ final class LikeController extends AbstractController
         UserRepository $userRepository,
         LikeRepository $likeRepository
     ): JsonResponse {
-        $user = $userRepository->findOneBy([]);
+
+        $user = $this->getUser();
+
+        if (!$user) {
+            return $this->json(['error' => 'Unauthorized'], 401);
+        }
+
         $post = $postRepository->find($postId);
 
         if (!$post) {

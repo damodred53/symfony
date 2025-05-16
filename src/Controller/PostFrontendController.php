@@ -8,12 +8,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 
-use App\Repository\PostRepository;
-use App\Repository\LikeRepository;
-use Doctrine\ORM\EntityManagerInterface;
-
 final class PostFrontendController extends AbstractController
 {
+    private string $jwtToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE3NDc0MDQ3OTksImV4cCI6MTc0NzQwODM5OSwicm9sZXMiOlsiUk9MRV9BRE1JTiIsIlJPTEVfVVNFUiJdLCJ1c2VybmFtZSI6InRlc3QifQ.HiKOK3FQhn8JnLifczC1RnNyWgP_dyRsjVV_EJ_YHOiS4Xir9MyRb6mkeCLadSupoS1tu3yCHh1cdXJAmEtfEzD4VCpJ9QO3o67r34x77-5ynepXmmYW0_zCv3zDULNGR6CTAEYLI7crWCXBdIAMWR-pw04xLp10jEBWQoMU-IzMZszEEe4rrdCoFAXlBIFsb7dKfdqARCnlZoOagD7knRZZT817U1SfCuPvAi-KFmaOTSjxqlRE10TajUbYiMN9g0HOjkSvs-f_piMlWTiCA1bubg_Q7KECR0JYK-dLzZvelJx91jUF81jSHnnvXL-hbDCiSY5N37Ci5KBwKQvDt-QiO1DnkUh8zEkJpL5sw_9L__r0CBFZIUOEKKOSVloZAiIrsd5lqu2XV-HjwNeb-1SJXDGlVlhC4_APFvrZdahDXZPD6oamyr8xFGhNwbeVsjqA_9bBxBddgVZKHIWP7T3t2bZSxVkZq1JXDqGGcX4QzNRJ9wOrLdv-EwRNa-JWcvSeIa0CdQNcbA0sJjoZPB82hRjwGct9hRmbEfWRQJ20xp_uD6kNkPUz-SB5PSPb6Tqoe9vHrJ2M8DVSEyxNLzoum4P7MZpRS3rDVvAB_CeMzh-VwSs92nmjhxePoJyhvbkFyXEz-4puegn-kpYXG4QODDVVYDhiXRtf57OvsAs';
+
     // Afficher la liste des posts
     #[Route('/api/post/frontend', name: 'app_post_frontend')]
     public function index(HttpClientInterface $client): Response
@@ -92,7 +90,7 @@ final class PostFrontendController extends AbstractController
             $response = $client->request('GET', 'http://localhost/api/jwt/posts/search', [
                 'query' => ['keyword' => $query],
                 'headers' => [
-                    'Authorization' => 'Bearer VOTRE_TOKEN_ICI'
+                    'Authorization' => 'Bearer ' . $this->jwtToken,
                 ]
             ]);
 
@@ -105,42 +103,41 @@ final class PostFrontendController extends AbstractController
         ]);
     }
 
-    #[Route('/post/{postId}/like-toggle', name: 'post_like_toggle', methods: ['POST'])]
-    public function toggleLike(
+    #[Route('/post/{postId}/like', name: 'post_like_api_proxy', methods: ['POST'])]
+    public function likeProxy(
         int $postId,
-        PostRepository $postRepository,
-        LikeRepository $likeRepository,
-        EntityManagerInterface $entityManager,
-        Request $request // <- important pour récupérer le paramètre 'query'
+        HttpClientInterface $client,
+        Request $request
     ): Response {
-        $user = $this->getUser();
-        $post = $postRepository->find($postId);
-
-        if (!$post || !$user) {
-            throw $this->createNotFoundException('Post non trouvé ou utilisateur non connecté');
-        }
-
-        // Vérifie si l'utilisateur a déjà liké
-        $like = $likeRepository->findOneBy([
-            'post' => $post,
-            'author' => $user
+        $response = $client->request('POST', "http://localhost/api/jwt/likes/{$postId}", [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $this->jwtToken,
+            ]
         ]);
 
-        if ($like) {
-            $entityManager->remove($like);
-        } else {
-            $newLike = new \App\Entity\Like();
-            $newLike->setAuthor($user);
-            $newLike->setPost($post);
-            $newLike->setCreatedAt(new \DateTimeImmutable());
-            $entityManager->persist($newLike);
-        }
-
-        $entityManager->flush();
-
-        // Redirection vers la page de recherche avec le terme (s'il existe)
+        // Rediriger avec l'éventuel mot-clé de recherche
         $query = $request->query->get('query');
 
         return $this->redirectToRoute('app_post_frontend_search', $query ? ['query' => $query] : []);
+    }
+
+    #[Route('/post/{postId}/unlike', name: 'post_unlike_api_proxy', methods: ['POST'])]
+    public function unlikeProxy(
+        int $postId,
+        HttpClientInterface $client,
+        Request $request
+    ): Response {
+        $response = $client->request('DELETE', "http://localhost/api/jwt/likes/{$postId}", [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $this->jwtToken,
+            ]
+        ]);
+
+        // 👇 Ajoute ceci pour voir la réponse de l'API
+        $status = $response->getStatusCode();
+        $body = $response->getContent(false); // false = ne jette pas d'exception sur erreurs HTTP
+
+        dump($status, $body);
+        exit;
     }
 }

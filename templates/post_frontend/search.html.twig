@@ -31,8 +31,10 @@
                         {% endif %}
 
                         {# Bouton Like / Unlike via formulaire #}
-                        <form method="post" action="{{ path('post_like_toggle', { postId: post.id }) }}">
-                            <button type="submit">Like</button>
+                        <form method="post" action="{{ path(post.isLikedByCurrentUser ? 'post_unlike_api_proxy' : 'post_like_api_proxy', { postId: post.id, query: query }) }}">
+                            <button type="submit">
+                                {{ post.isLikedByCurrentUser ? 'Unlike' : 'Like' }}
+                            </button>
                         </form>
 
                         {# Commentaires #}
