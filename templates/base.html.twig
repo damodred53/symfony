@@ -44,13 +44,15 @@
                     <a class="nav-link custom-link" href="{{ path(name = 'app_user_frontend_index') }}">Utilisateurs</a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link" href="{{ path(name = 'app_post_frontend_search') }}">Recherche des posts</a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link custom-link" href="{{ path(name = 'app_user_new') }}">Profil</a>
                 </li>
             </ul>
         </div>
     </div>
 </nav>
-
 
         <div class='container my-4' >
             {% block body %}{% endblock %}

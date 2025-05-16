@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Dto\Posts\PostCreateDTO;
 use App\Dto\Posts\PostDTO;
+use App\Dto\Posts\PostFullDTO;
 use App\Dto\Posts\PostUpdateDTO;
 use App\Dto\Posts\PostWithCommentsDTO;
 use App\Entity\Post;
@@ -294,7 +295,52 @@ final class PostController extends AbstractController
             ->getQuery()
             ->getResult();
 
-        $data = array_map(fn(Post $post) => (new PostDTO($post))->toArray(), $posts);
+        $user = $this->getUser();
+        $data = array_map(fn(Post $post) => (new PostFullDTO($post, $user))->toArray(), $posts);
+
+        return $this->json($data);
+    }
+
+    #[Route('/with-comments-and-likes', name: 'list_full', methods: ['GET'])]
+    #[OA\Get(
+        description: 'Retourne tous les posts avec commentaires et likes',
+        summary: 'Liste complète des posts',
+        security: [['bearer' => []]],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Liste complète des posts',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(
+                        properties: [
+                            new OA\Property(property: 'id', type: 'integer'),
+                            new OA\Property(property: 'content', type: 'string'),
+                            new OA\Property(property: 'createdAt', type: 'string', format: 'date-time'),
+                            new OA\Property(property: 'author', type: 'string'),
+                            new OA\Property(property: 'likeCount', type: 'integer'),
+                            new OA\Property(property: 'comments', type: 'array', items: new OA\Items(
+                                properties: [
+                                    new OA\Property(property: 'id', type: 'integer'),
+                                    new OA\Property(property: 'author', type: 'string'),
+                                    new OA\Property(property: 'content', type: 'string'),
+                                    new OA\Property(property: 'createdAt', type: 'string'),
+                                ],
+                                type: 'object'
+                            )),
+                        ],
+                        type: 'object'
+                    )
+                )
+            )
+        ]
+    )]
+    public function listWithCommentsAndLikes(PostRepository $postRepository): JsonResponse
+    {
+        $posts = $postRepository->findAll();
+
+        $user = $this->getUser();
+        $data = array_map(fn(Post $post) => (new PostFullDTO($post, $user))->toArray(), $posts);
 
         return $this->json($data);
     }
