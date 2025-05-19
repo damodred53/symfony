@@ -19,9 +19,10 @@ final class UserFrontendController extends AbstractController
         $tokenJwt = $request->getSession()->get('jwt_token');
         $tokenApi = $_ENV['BACKEND_AUTH_TOKEN'] ?? $_SERVER['BACKEND_AUTH_TOKEN'] ?? null;
         $apiBaseUrl = $_ENV['API_URL'] ?? $_SERVER['API_URL'] ?? null;
-        $response = $this->client->request('GET', $apiBaseUrl . '/api/user', [
+        $response = $this->client->request('GET', $apiBaseUrl . '/api/jwt/user', [
             'headers' => [
-                'X-API-TOKEN' => $tokenApi
+                'X-API-TOKEN' => $tokenApi,
+                'Authorization' => 'Bearer ' . $tokenJwt,
             ]
         ]);
         $users = $response->toArray();
@@ -38,9 +39,10 @@ final class UserFrontendController extends AbstractController
         $tokenJwt = $request->getSession()->get('jwt_token');
         $tokenApi = $_ENV['BACKEND_AUTH_TOKEN'] ?? $_SERVER['BACKEND_AUTH_TOKEN'] ?? null;
         $apiBaseUrl = $_ENV['API_URL'] ?? $_SERVER['API_URL'] ?? null;
-        $response = $this->client->request('GET', $apiBaseUrl . "/api/user/{$id}", [
+        $response = $this->client->request('GET', $apiBaseUrl . "/api/jwt/user/{$id}", [
             'headers' => [
-                'X-API-TOKEN' => $tokenApi
+                'X-API-TOKEN' => $tokenApi,
+                'Authorization' => 'Bearer ' . $tokenJwt,
             ]
         ]);
         $user = $response->toArray();
@@ -69,9 +71,10 @@ final class UserFrontendController extends AbstractController
 
             // Envoie les données sous forme de JSON à l'API backend
             try {
-                $response = $this->client->request('POST', $apiBaseUrl . '/api/user/new', [
+                $response = $this->client->request('POST', $apiBaseUrl . '/api/jwt/user/new', [
                     'headers' => [
-                        'X-API-TOKEN' => $tokenApi
+                        'X-API-TOKEN' => $tokenApi,
+                'Authorization' => 'Bearer ' . $tokenJwt,
                     ],
                     'json' => $data,
                 ]);
@@ -106,9 +109,10 @@ final class UserFrontendController extends AbstractController
         $apiBaseUrl = $_ENV['API_URL'] ?? $_SERVER['API_URL'] ?? null;
         // Récupération des données de l'utilisateur depuis l'API backend
         try {
-            $response = $this->client->request('GET', $apiBaseUrl . "/api/user/{$id}", [
+            $response = $this->client->request('GET', $apiBaseUrl . "/api/jwt/user/{$id}", [
                 'headers' => [
-                    'X-API-TOKEN' => $tokenApi
+                    'X-API-TOKEN' => $tokenApi,
+                'Authorization' => 'Bearer ' . $tokenJwt,
                 ]
             ]);
             $userData = $response->toArray();
@@ -125,9 +129,10 @@ final class UserFrontendController extends AbstractController
 
             // Envoi de la mise à jour au backend
             try {
-                $this->client->request('PUT', $apiBaseUrl . "/api/user/{$id}/edit", [
+                $this->client->request('PUT', $apiBaseUrl . "/api/jwt/user/{$id}/edit", [
                     'headers' => [
-                        'X-API-TOKEN' => $tokenApi
+                        'X-API-TOKEN' => $tokenApi,
+                'Authorization' => 'Bearer ' . $tokenJwt,
                     ],
                     'json' => $data,
                 ]);
@@ -149,11 +154,13 @@ final class UserFrontendController extends AbstractController
     public function delete(Request $request, int $id): Response
     {
         $tokenApi = $_ENV['BACKEND_AUTH_TOKEN'] ?? $_SERVER['BACKEND_AUTH_TOKEN'] ?? null;
+        $tokenJwt = $request->getSession()->get('jwt_token');
         $apiBaseUrl = $_ENV['API_URL'] ?? $_SERVER['API_URL'] ?? null;
 
-        $this->client->request('DELETE', $apiBaseUrl . "/api/user/{$id}", [
+        $this->client->request('DELETE', $apiBaseUrl . "/api/jwt/user/{$id}", [
             'headers' => [
-                'X-API-TOKEN' => $tokenApi
+                'X-API-TOKEN' => $tokenApi,
+                'Authorization' => 'Bearer ' . $tokenJwt,
             ]
         ]);
 
