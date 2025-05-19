@@ -24,7 +24,7 @@ final class PostFrontendController extends AbstractController
         }
 
 
-        $response = $client->request('GET', $apiBaseUrl.'/api/jwt/posts', [
+        $response = $client->request('GET', $apiBaseUrl.'/api/jwt/posts/with-comments-and-likes', [
             'headers' => [
                 'Accept' => 'application/json',
                 'X-API-TOKEN' => $tokenApi,
@@ -32,8 +32,7 @@ final class PostFrontendController extends AbstractController
             ],
         ]);
 
-        $posts = $response->toArray(false);
-
+        $posts = $response->toArray();
 
         return $this->render('post_frontend/index.html.twig', [
             'posts' => $posts,
