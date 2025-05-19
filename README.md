@@ -1,5 +1,9 @@
 # Symphony
 
+Projet réalisé par **Florent**, **Kilian** et **Corentin**
+
+Lien vers le [dépôt GitHub](https://github.com/damodred53/symfony)
+
 Pour lancer le back-end de Symphony, il suffit d’exécuter la commande suivante :
 ```
 docker-compose up -d --build
@@ -37,7 +41,7 @@ faut ajouter une configuration dans l’IDE. Voici les étapes à suivre :
    (Voir le rectangle rouge sur l’image ci-dessous)
    ![img5.png](pictures/img5.png)
 
-6. Ajout le ".env" à la racine du projet
+6. Ajoutez le fichier `.env` à la racine du projet :
 ```
 # In all environments, the following files are loaded if they exist,
 # the latter taking precedence over the former:
@@ -82,29 +86,36 @@ BACKEND_AUTH_TOKEN=WebSiteToken
 API_URL=http://localhost
 ```
 
-7. Il faut faire un `composer install` ou `composer update`.
+7. Exécutez la commande suivante pour installer les dépendances PHP : `composer install` ou `composer update`.
 
-8. Une fois le serveur lancé, allez sur l’URL suivante :
-   http://localhost:PortChoisi
-
-9. Créer le token API :
+8. Créer le token API :
 ```
 php bin/console app:create-api-token
 ```
-
-10. Créer un utilisateur :
+9. Créer un utilisateur :
 ```
 php bin/console  app:create-user
 ```
-Pour se connecter au front il suffit d'ajouter /home a la fin de l'url (Exemple sur l'image ci-dessous)
+
+10. Une fois le serveur lancé, ouvrez l’URL suivante dans votre navigateur :
+   http://localhost:PortChoisi
+    Pour accéder au front, ajoutez /home à l’URL.
+    (Exemple sur l’image ci-dessous)
 ![img6.png](pictures/img6.png)
 
 Un user par défault est déjà créé avec les identifiants suivants :
 - Nom utilisateur : `test`
 - Mot de passe : `password123`
 
+## Etat du projet
+
+- L’authentification est fonctionnelle.
+- On peut créer un utilisateur, ajouter des posts (équivalents à des tweets), et commenter.
+- La création d’un tweet fonctionne uniquement pour le premier utilisateur créé (donc test).
+- Les likes sont fonctionnels côté back, mais pas encore intégrés côté front.
+
 ## Fonctionnalités
-- Sécurisation des routes (via JWT et Token API)
-- Gestion des logs via monolog
-- API
-- Front
+- Sécurisation des routes (JWT + Token API)
+- API REST
+- Gestion des logs via Monolog
+- Interface front simple (via Twig)
