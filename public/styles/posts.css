@@ -3,7 +3,6 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #f9f9f9;
     color: #333;
-    padding: 2rem;
     line-height: 1.6;
 }
 
@@ -73,4 +72,9 @@ form[method="POST"][style*="inline"] button {
 
 form[method="POST"][style*="inline"] button:hover {
     background-color: #c0392b;
+}
+
+.title {
+    font-size: 15px;
+    margin-right: 3rem;
 }

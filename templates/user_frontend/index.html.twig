@@ -3,16 +3,15 @@
 {% block title %}User index{% endblock %}
 
 {% block body %}
-    <h1>User index</h1>
+    <h1 class="mb-4">Liste des utilisateurs</h1>
 
-    <table class="table">
-        <thead>
+    <table class="table table-dark table-striped table-bordered rounded overflow-hidden shadow-sm">
+        <thead class="table-light">
             <tr>
                 <th>Id</th>
                 <th>Username</th>
                 <th>Email</th>
-             
-                <th>actions</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -21,19 +20,17 @@
                 <td>{{ user.id }}</td>
                 <td>{{ user.username }}</td>
                 <td>{{ user.email }}</td>
-               
                 <td>
-                    <a href="{{ path('app_user_frontend_show', {'id': user.id}) }}">show</a>
-                    
+                    <a href="{{ path('app_user_frontend_show', {'id': user.id}) }}" class="btn btn-sm custom-btn">Voir</a>
                 </td>
             </tr>
         {% else %}
             <tr>
-                <td colspan="8">no records found</td>
+                <td colspan="4">Aucun utilisateur trouvé.</td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
 
-    <a href="{{ path('app_user_frontend_new') }}">Create new</a>
+    <a href="{{ path('app_user_frontend_new') }}" class="btn custom-btn-red">Créer un nouvel utilisateur</a>
 {% endblock %}

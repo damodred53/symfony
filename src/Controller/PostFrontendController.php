@@ -2,12 +2,11 @@
 
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final class PostFrontendController extends AbstractController
 {
@@ -49,7 +48,9 @@ final class PostFrontendController extends AbstractController
         $tokenApi = $_ENV['BACKEND_AUTH_TOKEN'] ?? $_SERVER['BACKEND_AUTH_TOKEN'] ?? null;
         $apiBaseUrl = $_ENV['API_URL'] ?? $_SERVER['API_URL'] ?? null;
 
+        $errors = [];
 
+        // On tente la création
         if ($content) {
             $response = $client->request('POST', $apiBaseUrl . '/api/jwt/posts', [
                 'headers' => [
@@ -65,11 +66,27 @@ final class PostFrontendController extends AbstractController
                 return $this->redirectToRoute('app_post_frontend');
             }
 
-            $this->addFlash('error', 'Une erreur est survenue lors de la création du post.');
+            if ($response->getStatusCode() === 400) {
+                $data = $response->toArray(false);
+                $errors = $data['errors'] ?? ['global' => $data['error'] ?? 'Erreur inconnue.'];
+            } else {
+                $errors['global'] = 'Une erreur est survenue lors de la création du post.';
+            }
+        } else {
+            $errors['content'] = 'Le contenu est requis.';
         }
 
-        return $this->redirectToRoute('app_post_frontend');
+        $postsResponse = $client->request('GET', 'http://localhost/api/jwt/posts');
+        $posts = $postsResponse->toArray();
+
+        return $this->render('post_frontend/index.html.twig', [
+            'errors' => $errors,
+            'posts' => $posts,
+            'old_content' => $content
+        ]);
     }
+
+
 
     // Supprimer un post
     #[Route('/post/frontend/delete/{id}', name: 'app_post_frontend_delete', methods: ['POST'])]
@@ -93,4 +110,65 @@ final class PostFrontendController extends AbstractController
 
         return $this->redirectToRoute('app_post_frontend');
     }
+
+
+    #[Route('/post/frontend/search', name: 'app_post_frontend_search', methods: ['GET'])]
+    public function search(HttpClientInterface $client, Request $request): Response
+    {
+        $query = $request->query->get('query');
+
+        $posts = [];
+
+        if ($query) {
+            $response = $client->request('GET', 'http://localhost/api/jwt/posts/search', [
+                'query' => ['keyword' => $query],
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $this->jwtToken,
+                ]
+            ]);
+
+            $posts = $response->toArray();
+        }
+
+        return $this->render('post_frontend/search.html.twig', [
+            'posts' => $posts,
+            'query' => $query
+        ]);
+    }
+
+    #[Route('/post/{postId}/like', name: 'post_like_api_proxy', methods: ['POST'])]
+    public function likeProxy(
+        int $postId,
+        HttpClientInterface $client,
+        Request $request
+    ): Response {
+        $response = $client->request('POST', "http://localhost/api/jwt/likes/{$postId}", [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $this->jwtToken,
+            ]
+        ]);
+
+        // Rediriger avec l'éventuel mot-clé de recherche
+        $query = $request->query->get('query');
+
+        return $this->redirectToRoute('app_post_frontend_search', $query ? ['query' => $query] : []);
+    }
+
+    #[Route('/post/frontend/{id}/show', name: 'app_post_frontend_show', methods: ['GET'])]
+    public function show(HttpClientInterface $client, int $id): Response
+    {
+        $response = $client->request('GET', "http://localhost/api/jwt/posts/{$id}/with-comments");
+
+        if ($response->getStatusCode() !== 200) {
+            throw $this->createNotFoundException("Post non trouvé.");
+        }
+
+        $data = $response->toArray();
+
+        return $this->render('post_frontend/show.html.twig', [
+            'post' => $data['post'],
+            'comments' => $data['comments']
+        ]);
+    }
+
 }

@@ -32,11 +32,21 @@
 </ul>
 
 <h2>Créer un nouveau post</h2>
+
+{% if errors is defined and errors.global is defined %}
+    <div class="error">{{ errors.global }}</div>
+{% endif %}
+
 <form method="POST" action="{{ path('app_post_frontend_create') }}">
     <label for="content">Contenu du post</label>
-    <textarea id="content" name="content" rows="4" required></textarea>
+    <textarea id="content" name="content" rows="4">{{ old_content ?? '' }}</textarea>
+
+    {% if errors is defined and errors.content is defined %}
+        <div class="error">{{ errors.content }}</div>
+    {% endif %}
 
     <button type="submit">Envoyer</button>
 </form>
+
 
 {% endblock %}
