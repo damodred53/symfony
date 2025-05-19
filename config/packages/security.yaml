@@ -44,5 +44,5 @@ security:
         - { path: ^/api/jwt, roles: [ROLE_API_AND_JWT] }
         - {path: ^/api/jwt/token/add, 
               roles: ROLE_ADMIN }
-      #  - { path: ^/api, roles: ROLE_API }
+        - { path: ^/api, roles: ROLE_API }
 

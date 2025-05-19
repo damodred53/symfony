@@ -13,9 +13,17 @@ final class UserFrontendController extends AbstractController
     public function __construct(private readonly HttpClientInterface $client) {}
 
     #[Route('/frontend/user', name: 'app_user_frontend_index', methods: ['GET'])]
-    public function index(): Response
+    public function index( Request $request): Response
     {
-        $response = $this->client->request('GET', 'http://localhost/api/user');
+        $content = $request->request->get('content');
+        $tokenJwt = $request->getSession()->get('jwt_token');
+        $tokenApi = $_ENV['BACKEND_AUTH_TOKEN'] ?? $_SERVER['BACKEND_AUTH_TOKEN'] ?? null;
+        $apiBaseUrl = $_ENV['API_URL'] ?? $_SERVER['API_URL'] ?? null;
+        $response = $this->client->request('GET', $apiBaseUrl . '/api/user', [
+            'headers' => [
+                'X-API-TOKEN' => $tokenApi
+            ]
+        ]);
         $users = $response->toArray();
 
         return $this->render('user_frontend/index.html.twig', [
@@ -24,9 +32,17 @@ final class UserFrontendController extends AbstractController
     }
 
     #[Route('/frontend/user/{id<\d+>}', name: 'app_user_frontend_show', methods: ['GET'])]
-    public function show(int $id): Response
+    public function show(int $id, Request $request): Response
     {
-        $response = $this->client->request('GET', "http://localhost/api/user/{$id}");
+        $content = $request->request->get('content');
+        $tokenJwt = $request->getSession()->get('jwt_token');
+        $tokenApi = $_ENV['BACKEND_AUTH_TOKEN'] ?? $_SERVER['BACKEND_AUTH_TOKEN'] ?? null;
+        $apiBaseUrl = $_ENV['API_URL'] ?? $_SERVER['API_URL'] ?? null;
+        $response = $this->client->request('GET', $apiBaseUrl . "/api/user/{$id}", [
+            'headers' => [
+                'X-API-TOKEN' => $tokenApi
+            ]
+        ]);
         $user = $response->toArray();
 
         return $this->render('user_frontend/show.html.twig', [
@@ -37,6 +53,12 @@ final class UserFrontendController extends AbstractController
      #[Route('/frontend/user/new', name: 'app_user_frontend_new', methods: ['GET', 'POST'])]
     public function new(Request $request): Response
     {
+
+        $content = $request->request->get('content');
+        $tokenJwt = $request->getSession()->get('jwt_token');
+        $tokenApi = $_ENV['BACKEND_AUTH_TOKEN'] ?? $_SERVER['BACKEND_AUTH_TOKEN'] ?? null;
+        $apiBaseUrl = $_ENV['API_URL'] ?? $_SERVER['API_URL'] ?? null;
+
         if ($request->isMethod('POST')) {
             // Récupère les données du formulaire
             $data = [
@@ -44,10 +66,13 @@ final class UserFrontendController extends AbstractController
                 'email' => $request->request->get('email'),
                 'password' => $request->request->get('password'),
             ];
-            
+
             // Envoie les données sous forme de JSON à l'API backend
             try {
-                $response = $this->client->request('POST', 'http://localhost/api/user/new', [
+                $response = $this->client->request('POST', $apiBaseUrl . '/api/user/new', [
+                    'headers' => [
+                        'X-API-TOKEN' => $tokenApi
+                    ],
                     'json' => $data,
                 ]);
 
@@ -75,9 +100,17 @@ final class UserFrontendController extends AbstractController
     #[Route('/frontend/user/{id}/edit', name: 'app_user_frontend_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, int $id): Response
     {
+        $content = $request->request->get('content');
+        $tokenJwt = $request->getSession()->get('jwt_token');
+        $tokenApi = $_ENV['BACKEND_AUTH_TOKEN'] ?? $_SERVER['BACKEND_AUTH_TOKEN'] ?? null;
+        $apiBaseUrl = $_ENV['API_URL'] ?? $_SERVER['API_URL'] ?? null;
         // Récupération des données de l'utilisateur depuis l'API backend
         try {
-            $response = $this->client->request('GET', "http://localhost/api/user/{$id}");
+            $response = $this->client->request('GET', $apiBaseUrl . "/api/user/{$id}", [
+                'headers' => [
+                    'X-API-TOKEN' => $tokenApi
+                ]
+            ]);
             $userData = $response->toArray();
         } catch (\Exception $e) {
             $this->addFlash('error', 'Unable to fetch user data: ' . $e->getMessage());
@@ -92,7 +125,10 @@ final class UserFrontendController extends AbstractController
 
             // Envoi de la mise à jour au backend
             try {
-                $this->client->request('PUT', "http://localhost/api/user/{$id}/edit", [
+                $this->client->request('PUT', $apiBaseUrl . "/api/user/{$id}/edit", [
+                    'headers' => [
+                        'X-API-TOKEN' => $tokenApi
+                    ],
                     'json' => $data,
                 ]);
 
@@ -110,9 +146,16 @@ final class UserFrontendController extends AbstractController
     }
 
     #[Route('/frontend/user/{id}/delete', name: 'app_user_frontend_delete', methods: ['POST'])]
-    public function delete(int $id): Response
+    public function delete(Request $request, int $id): Response
     {
-        $this->client->request('DELETE', "http://localhost/api/user/{$id}");
+        $tokenApi = $_ENV['BACKEND_AUTH_TOKEN'] ?? $_SERVER['BACKEND_AUTH_TOKEN'] ?? null;
+        $apiBaseUrl = $_ENV['API_URL'] ?? $_SERVER['API_URL'] ?? null;
+
+        $this->client->request('DELETE', $apiBaseUrl . "/api/user/{$id}", [
+            'headers' => [
+                'X-API-TOKEN' => $tokenApi
+            ]
+        ]);
 
         return $this->redirectToRoute('app_user_frontend_index');
     }

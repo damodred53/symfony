@@ -22,13 +22,13 @@ final class LikeController extends AbstractController
     #[OA\Post(
         description: 'Like un post spécifique.',
         summary: 'Liker un post',
-        security: [['bearer' => []]],
+         security: [['bearer' => [], 'apiToken' => []]],
         parameters: [
             new OA\Parameter(
                 name: 'postId',
+                description: 'ID du post à liker',
                 in: 'path',
                 required: true,
-                description: 'ID du post à liker',
                 schema: new OA\Schema(type: 'integer')
             )
         ],
@@ -91,13 +91,13 @@ final class LikeController extends AbstractController
     #[OA\Delete(
         description: 'Unlike un post spécifique.',
         summary: 'Retirer un like sur un post',
-        security: [['bearer' => []]],
+         security: [['bearer' => [], 'apiToken' => []]],
         parameters: [
             new OA\Parameter(
                 name: 'postId',
+                description: 'ID du post à unliker',
                 in: 'path',
                 required: true,
-                description: 'ID du post à unliker',
                 schema: new OA\Schema(type: 'integer')
             )
         ],

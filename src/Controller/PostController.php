@@ -124,7 +124,7 @@ final class PostController extends AbstractController
     #[OA\Get(
         description: 'Retourne un post spécifique par son ID.',
         summary: 'Voir un post spécifique',
-        security: [['bearer' => []]],
+        security: [['bearer' => [], 'apiToken' => []]],
         parameters: [
             new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))
         ],
@@ -153,7 +153,7 @@ final class PostController extends AbstractController
     #[OA\Patch(
         description: 'Modifie un post existant.',
         summary: 'Modifier un post',
-        security: [['bearer' => []]],
+          security: [['bearer' => [], 'apiToken' => []]],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
@@ -228,7 +228,7 @@ final class PostController extends AbstractController
     #[OA\Delete(
         description: 'Supprime un post existant.',
         summary: 'Supprimer un post',
-        security: [['bearer' => []]],
+          security: [['bearer' => [], 'apiToken' => []]],
         parameters: [
             new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))
         ],
@@ -253,7 +253,7 @@ final class PostController extends AbstractController
     #[OA\Get(
         description: 'Recherche de posts par mot-clé.',
         summary: 'Rechercher des posts',
-        security: [['bearer' => []]],
+          security: [['bearer' => [], 'apiToken' => []]],
         parameters: [
             new OA\Parameter(
                 name: 'keyword',
@@ -305,7 +305,7 @@ final class PostController extends AbstractController
     #[OA\Get(
         description: 'Retourne tous les posts avec commentaires et likes',
         summary: 'Liste complète des posts',
-        security: [['bearer' => []]],
+          security: [['bearer' => [], 'apiToken' => []]],
         responses: [
             new OA\Response(
                 response: 200,
@@ -349,7 +349,7 @@ final class PostController extends AbstractController
     #[OA\Get(
         description: 'Retourne un post avec tous ses commentaires associés.',
         summary: 'Voir un post + ses commentaires',
-        security: [['bearer' => []]],
+          security: [['bearer' => [], 'apiToken' => []]],
         parameters: [
             new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))
         ],
@@ -359,12 +359,12 @@ final class PostController extends AbstractController
                 description: 'Post + commentaires récupérés',
                 content: new OA\JsonContent(
                     properties: [
-                        new OA\Property(property: 'post', type: 'object', properties: [
+                        new OA\Property(property: 'post', properties: [
                             new OA\Property(property: 'id', type: 'integer', example: 1),
                             new OA\Property(property: 'content', type: 'string', example: 'Mon premier post.'),
                             new OA\Property(property: 'author', type: 'string', example: 'test'),
                             new OA\Property(property: 'createdAt', type: 'string', format: 'date-time', example: '2025-05-15 12:26:16'),
-                        ]),
+                        ], type: 'object'),
                         new OA\Property(property: 'comments', type: 'array', items: new OA\Items(
                             properties: [
                                 new OA\Property(property: 'id', type: 'integer'),
