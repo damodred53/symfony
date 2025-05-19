@@ -16,3 +16,8 @@ X-API-TOKEN: LeSuperToken123
 GET http://localhost/api/jwt/comments
 Authorization: Bearer {{auth_token}}
 X-API-TOKEN: LeSuperToken123
+
+###
+
+GET localhost:8080/api/post/frontend
+X-API-TOKEN: WebSiteToken

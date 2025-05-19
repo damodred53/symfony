@@ -28,7 +28,7 @@ final class HomeController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $token = $_ENV['BACKEND_AUTH_TOKEN'] ?? $_SERVER['BACKEND_AUTH_TOKEN'] ?? null;
-
+            var_dump($token);
             $json = json_encode($loginData);
               $client = HttpClient::create();
               $apiBaseUrl = $_ENV['API_URL'] ?? $_SERVER['API_URL'] ?? null;
@@ -46,11 +46,14 @@ final class HomeController extends AbstractController
 
 
                 $data = $response->toArray(false);
-                dump($data);
-                $session = $request->getSession();
-                $session->set('jwt_token', $token);
-                return $this->redirect('http:localhost:8080/api/post/frontend');
 
+                if (sizeof($data) ==1 ) {
+                    $message = 'Connexion réussie !';
+                    $session = $request->getSession();
+                    $session->set('jwt_token', $data['token']);
+
+                    return $this->redirect('/post/frontend');
+                }
 
             } catch (TransportExceptionInterface $e) {
                 dump("Erreur réseau : " . $e->getMessage());

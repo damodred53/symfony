@@ -2,34 +2,60 @@
 
 namespace App\Controller;
 
-use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final class PostFrontendController extends AbstractController
 {
-    // Afficher la liste des posts
-    #[Route('/api/post/frontend', name: 'app_post_frontend')]
-    public function index(HttpClientInterface $client): Response
+
+    #[Route('/post/frontend', name: 'app_post_frontend')]
+    public function index(Request $request, HttpClientInterface $client): Response
     {
-        $response = $client->request('GET', 'http://localhost/api/jwt/posts');
-        $posts = $response->toArray();
+        $tokenJwt = $request->getSession()->get('jwt_token');
+        $tokenApi = $_ENV['BACKEND_AUTH_TOKEN'] ?? $_SERVER['BACKEND_AUTH_TOKEN'] ?? null;
+        $apiBaseUrl = $_ENV['API_URL'] ?? $_SERVER['API_URL'] ?? null;
+
+        if (!$tokenApi) {
+            throw new AccessDeniedHttpException('Token manquant.');
+        }
+
+
+        $response = $client->request('GET', $apiBaseUrl.'/api/jwt/posts', [
+            'headers' => [
+                'Accept' => 'application/json',
+                'X-API-TOKEN' => $tokenApi,
+                'Authorization' => 'Bearer ' . $tokenJwt,
+            ],
+        ]);
+
+        $posts = $response->toArray(false);
 
         return $this->render('post_frontend/index.html.twig', [
             'posts' => $posts,
         ]);
     }
 
+
     // Créer un nouveau post
-    #[Route('/api/post/frontend/create', name: 'app_post_frontend_create', methods: ['POST'])]
+    #[Route('/post/frontend/create', name: 'app_post_frontend_create', methods: ['POST'])]
     public function create(HttpClientInterface $client, Request $request): Response
     {
         $content = $request->request->get('content');
+        $tokenJwt = $request->getSession()->get('jwt_token');
+        $tokenApi = $_ENV['BACKEND_AUTH_TOKEN'] ?? $_SERVER['BACKEND_AUTH_TOKEN'] ?? null;
+        $apiBaseUrl = $_ENV['API_URL'] ?? $_SERVER['API_URL'] ?? null;
+
 
         if ($content) {
-            $response = $client->request('POST', 'http://localhost/api/jwt/posts', [
+            $response = $client->request('POST', $apiBaseUrl . '/api/jwt/posts', [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $tokenJwt,
+                    'X-API-TOKEN' => $tokenApi,
+                ],
                 'json' => [
                     'content' => $content,
                 ],
@@ -46,10 +72,18 @@ final class PostFrontendController extends AbstractController
     }
 
     // Supprimer un post
-    #[Route('/api/post/frontend/delete/{id}', name: 'app_post_frontend_delete', methods: ['POST'])]
-    public function delete(HttpClientInterface $client, int $id): Response
+    #[Route('/post/frontend/delete/{id}', name: 'app_post_frontend_delete', methods: ['POST'])]
+    public function delete(HttpClientInterface $client, int $id, Request $request): Response
     {
-        $response = $client->request('DELETE', 'http://localhost/api/jwt/posts/'.$id);
+        $tokenJwt = $request->getSession()->get('jwt_token');
+        $tokenApi = $_ENV['BACKEND_AUTH_TOKEN'] ?? $_SERVER['BACKEND_AUTH_TOKEN'] ?? null;
+        $apiBaseUrl = $_ENV['API_URL'] ?? $_SERVER['API_URL'] ?? null;
+        $response = $client->request('DELETE', $apiBaseUrl . '/api/jwt/posts/' . $id, [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $tokenJwt,
+                'X-API-TOKEN' => $tokenApi,
+            ],
+        ]);
 
         if ($response->getStatusCode() === 204) {
             return $this->redirectToRoute('app_post_frontend');
