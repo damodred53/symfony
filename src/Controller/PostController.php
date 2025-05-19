@@ -58,25 +58,26 @@ final class PostController extends AbstractController
         return $this->json($data);
     }
 
-    #[Route('/{id}', name: 'create_post', methods: ['POST'])]
+
+    #[Route('', name: 'create', methods: ['POST'])]
     #[OA\Post(
-        summary: 'Créer un nouveau post pour un utilisateur spécifique',
-        description: 'Crée un post et l’associe à un utilisateur existant via son ID.',
+        description: 'Crée un nouveau post pour un utilisateur.',
+        summary: 'Créer un nouveau post',
         security: [['bearer' => [], 'apiToken' => []]],
-        parameters: [
-            new OA\Parameter(
-                name: 'id',
-                in: 'path',
-                required: true,
-                description: 'ID de l\'utilisateur',
-                schema: new OA\Schema(type: 'integer')
-            )
-        ],
+
+
+
+
+
+
+
+
+
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
                 properties: [
-                    new OA\Property(property: 'content', type: 'string', example: 'Mon premier post.')
+                    new OA\Property(property: 'content', type: 'string', example: 'Mon premier post.'),
                 ],
                 type: 'object'
             )
@@ -87,33 +88,34 @@ final class PostController extends AbstractController
                 description: 'Post créé avec succès',
                 content: new OA\JsonContent(
                     properties: [
-                        new OA\Property(property: 'message', type: 'string', example: 'Post created'),
-                        new OA\Property(property: 'post', type: 'object')
-                    ]
-                )
-            ),
-            new OA\Response(
-                response: 400,
-                description: 'Requête invalide ou utilisateur non trouvé',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(property: 'error', type: 'string', example: 'User not found')
-                    ]
+                        new OA\Property(property: 'message', type: 'string', example: 'Post created successfully!'),
+                        new OA\Property(property: 'id', type: 'integer', example: 1),
+                    ],
+                    type: 'object'
+
+
+
+
+
+
+
+
                 )
             )
         ]
     )]
-    public function create(
-        int $id,
-        Request $request,
-        ValidatorInterface $validator,
-        EntityManagerInterface $em,
-        UserRepository $userRepository
-    ): JsonResponse {
+    public function create(Request $request, ValidatorInterface $validator, EntityManagerInterface $em, UserRepository $userRepository): JsonResponse
+    {
+
+
+
+
+
         $data = json_decode($request->getContent(), true);
         $dto = PostCreateDTO::fromArray($data);
 
         $errors = $validator->validate($dto);
+
         if (count($errors) > 0) {
             $messages = [];
             foreach ($errors as $error) {
@@ -122,7 +124,7 @@ final class PostController extends AbstractController
             return $this->json(['errors' => $messages], 400);
         }
 
-        $user = $userRepository->find($id);
+        $user = $userRepository->findOneBy([]);
         if (!$user) {
             return $this->json(['error' => 'User not found'], 400);
         }

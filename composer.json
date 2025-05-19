@@ -8,11 +8,13 @@
     "require": {
         "php": ">=8.3.20",
         "ext-ctype": "*",
+        "ext-curl": "*",
         "ext-iconv": "*",
         "doctrine/dbal": "^3.9.4",
         "doctrine/doctrine-bundle": "^2.14",
         "doctrine/doctrine-migrations-bundle": "^3.4.2",
         "doctrine/orm": "^3.3.3",
+        "firebase/php-jwt": "^6.11",
         "lexik/jwt-authentication-bundle": "^3.1.1",
         "nelmio/api-doc-bundle": "^5.0.1",
         "runtime/frankenphp-symfony": "^0.2.0",
@@ -30,8 +32,7 @@
         "symfony/webpack-encore-bundle": ">=2.2",
         "symfony/yaml": "7.2.*",
         "twig/extra-bundle": "^2.12|^3.21",
-        "twig/twig": "^2.12|^3.21.1",
-        "ext-curl": "*"
+        "twig/twig": "^2.12|^3.21.1"
     },
     "config": {
         "allow-plugins": {

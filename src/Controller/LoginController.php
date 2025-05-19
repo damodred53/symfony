@@ -1,9 +1,8 @@
 <?php
 
 namespace App\Controller;
-namespace App\Controller;
-use App\Service\TokenHelper;
 
+use App\Service\TokenHelper;
 use Doctrine\DBAL\Connection;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
