@@ -62,7 +62,7 @@ final class PostController extends AbstractController
     #[OA\Post(
         description: 'Crée un nouveau post pour un utilisateur.',
         summary: 'Créer un nouveau post',
-        security: [['bearer' => []]],
+        security: [['bearer' => [], 'apiToken' => []]],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
