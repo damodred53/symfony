@@ -22,6 +22,25 @@
         <p>Aucun commentaire pour ce post.</p>
     {% endif %}
 
+    <h4>Ajouter un commentaire :</h4>
+
+{% if errors is defined and errors is not empty %}
+    <div class="alert alert-danger">
+        <ul>
+            {% for err in errors %}
+                <li>{{ err }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+
+<form method="post" action="{{ path('app_post_frontend_add_comment', { id: post.id }) }}">
+    <div class="mb-3">
+        <textarea class="form-control" name="content" rows="3" placeholder="Votre commentaire...">{{ old_content ?? '' }}</textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Envoyer</button>
+</form>
+
     <a href="{{ path('app_post_frontend_search', { query: app.request.get('query') }) }}" class="btn btn-secondary mt-3">
         Retour à la recherche
     </a>

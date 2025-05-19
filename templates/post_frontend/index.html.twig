@@ -1,52 +1,89 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello PostFrontendController!{% endblock %}
+{% block title %}Liste des Posts{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+<div class="container mt-4">
+    <h1 class="mb-4">Liste des posts depuis l’API</h1>
 
-<h1>Liste des posts depuis l’API</h1>
+    {% if posts is not empty %}
+        {% for post in posts %}
+            <div class="border rounded p-3 mb-4">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <strong>{{ post.author }}</strong>
+                        <small class="text-muted">le {{ post.createdAt|date('d/m/Y H:i') }}</small>
+                    </div>
+                    <form method="POST" action="{{ path('app_comment_api_front') }}" class="mt-3">
+                        <input type="hidden" name="post_id" value="{{ post.id }}">
+                        <div class="mb-2">
+                            <textarea class="form-control" name="content" placeholder="Ajouter un commentaire..." required></textarea>
+                        </div>
+                        <button type="submit"  class="btn btn-sm btn-primary">Ajouter un commentaire</button>
+                    </form>
+                    <form action="{{ path('app_post_frontend_delete', { 'id': post.id }) }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce post ?')">
+                        <button class="btn btn-sm btn-danger" type="submit">Supprimer</button>
+                    </form>
+                </div>
+                <div class="mt-2">
+                    {{ post.content }}
+                </div>
 
-<ul>
-    {% for post in posts %}
-        <li class="list_posts">
+                <hr>
 
-            <div>
-                <strong>{{ post.author }}</strong> ({{ post.createdAt }}) :
+                <div class="mt-3">
+                    <strong>Commentaires ({{ post.comments|length }})</strong>
+                    {% if post.comments is not empty %}
+                        <ul>
+                            {% for comment in post.comments %}
+                                <li>
+                                    <strong>{{ comment.author }}</strong> ({{ comment.createdAt|date('d/m/Y H:i') }}):
+                                    <p>{{ comment.content }}</p>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>Aucun commentaire</p>
+                    {% endif %}
+                </div>
+
+                <div class="mt-3">
+                    <strong>Likes ({{ post.likeCount }})</strong>
+                    <form action="{{ path('post_like_api_proxy', { 'postId': post.id }) }}" method="POST">
+                        <button type="submit" class="btn btn-sm btn-success">J'aime</button>
+                    </form>
+                </div>
             </div>
-            <div>
-                {{ post.content }}
-            </div>
-
-
-            <form class="deleting_form" action="{{ path('app_post_frontend_delete', { 'id': post.id }) }}" method="POST" >
-                <button class="deleting_button" type="submit" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce post ?')">Supprimer</button>
-            </form>
-        </li>
+        {% endfor %}
     {% else %}
-        <li>Aucun post trouvé.</li>
-    {% endfor %}
-</ul>
-
-<h2>Créer un nouveau post</h2>
-
-{% if errors is defined and errors.global is defined %}
-    <div class="error">{{ errors.global }}</div>
-{% endif %}
-
-<form method="POST" action="{{ path('app_post_frontend_create') }}">
-    <label for="content">Contenu du post</label>
-    <textarea id="content" name="content" rows="4">{{ old_content ?? '' }}</textarea>
-
-    {% if errors is defined and errors.content is defined %}
-        <div class="error">{{ errors.content }}</div>
+        <div class="alert alert-info">Aucun post trouvé.</div>
     {% endif %}
 
-    <button type="submit">Envoyer</button>
-</form>
+    <hr>
 
+    <h2 class="mt-4">Créer un nouveau post</h2>
 
+    {% if errors is defined and errors.global is defined %}
+        <div class="alert alert-danger">{{ errors.global }}</div>
+    {% endif %}
+
+    <form method="POST" action="{{ path('app_post_frontend_create') }}">
+        <div class="mb-3">
+            <label for="content" class="form-label">Contenu du post</label>
+            <textarea class="form-control" id="content" name="content" rows="4">{{ old_content ?? '' }}</textarea>
+            {% if errors is defined and errors.content is defined %}
+                <div class="text-danger mt-1">{{ errors.content }}</div>
+            {% endif %}
+        </div>
+        <button type="submit" class="btn btn-primary">Envoyer</button>
+    </form>
+</div>
+
+{% for type, messages in app.flashes %}
+    {% for message in messages %}
+        <div class="alert alert-{{ type }}">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endfor %}
 {% endblock %}

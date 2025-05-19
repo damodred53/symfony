@@ -34,6 +34,7 @@ final class PostFrontendController extends AbstractController
 
         $posts = $response->toArray(false);
 
+
         return $this->render('post_frontend/index.html.twig', [
             'posts' => $posts,
         ]);
@@ -51,7 +52,6 @@ final class PostFrontendController extends AbstractController
 
         $errors = [];
 
-        // On tente la création
         if ($content) {
             $response = $client->request('POST', $apiBaseUrl . '/api/jwt/posts', [
                 'headers' => [
@@ -171,5 +171,69 @@ final class PostFrontendController extends AbstractController
             'comments' => $data['comments']
         ]);
     }
+
+    #[Route('/post/frontend/{id}/comment', name: 'app_post_frontend_add_comment', methods: ['POST'])]
+    public function addComment(
+        HttpClientInterface $client,
+        Request $request,
+        int $id
+    ): Response {
+        $content = $request->request->get('content');
+        $errors = [];
+
+        if ($content) {
+            $response = $client->request('POST', 'http://localhost/api/jwt/comments', [
+                'json' => [
+                    'postId' => $id,
+                    'content' => $content
+                ],
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $this->jwtToken,
+                ]
+            ]);
+
+            if ($response->getStatusCode() === 201) {
+                return $this->redirectToRoute('app_post_frontend_show', ['id' => $id]);
+            } else {
+                $errors['global'] = 'Erreur lors de la création du commentaire.';
+            }
+        } else {
+            $errors['content'] = 'Le contenu du commentaire est requis.';
+        }
+
+    }
+
+    #[Route('/posts/frontend', name: 'app_post_frontend', methods: ['GET'])]
+public function listWithCommentsAndLikes(HttpClientInterface $client): Response
+{
+    // Effectuer la requête à l'API backend
+    $response = $client->request('GET', 'http://localhost/api/jwt/posts/with-comments-and-likes', [
+        'headers' => [
+            'Authorization' => 'Bearer ' . $this->jwtToken,
+        ],
+    ]);
+
+    // Vérifier si la réponse est correcte (code 200)
+    if ($response->getStatusCode() !== 200) {
+        // Récupérer le contenu de l'erreur (si disponible)
+        $errorData = json_decode($response->getContent(), true);
+        $errorMessage = $errorData['error'] ?? 'Erreur inconnue';
+
+        // Ajouter un message flash d'erreur
+        $this->addFlash('error', 'Impossible de récupérer les posts. Détails de l\'erreur : ' . $errorMessage);
+
+        // Rediriger vers la page de la liste des posts
+        return $this->redirectToRoute('app_post_frontend');
+    }
+
+    // Si la réponse est correcte, récupérer les posts
+    $posts = $response->toArray();
+
+    // Afficher la page des posts
+    return $this->render('post_frontend/index.html.twig', [
+        'posts' => $posts,
+    ]);
+}
+
 
 }

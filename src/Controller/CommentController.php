@@ -101,7 +101,7 @@ final class CommentController extends AbstractController
             return $this->json(['error' => 'Post ID and Content are required'], 400);
         }
 
-        $user = $userRepository->findOneBy([]); // Tu devrais récupérer l'utilisateur connecté ici idéalement
+        $user = $userRepository->findOneBy([]); 
         $post = $postRepository->find($postId);
 
         if (!$post) {

@@ -1,7 +1,7 @@
 ﻿### Authentification (récupération du token)
 POST http://localhost/api/login
 Content-Type: application/json
-X-API-TOKEN: LeSuperToken123
+X-API-TOKEN: WebSiteToken
 
 {
     "username": "test",
@@ -15,7 +15,7 @@ X-API-TOKEN: LeSuperToken123
 ### Requête protégée avec le token récupéré
 GET http://localhost/api/jwt/comments
 Authorization: Bearer {{auth_token}}
-X-API-TOKEN: LeSuperToken123
+X-API-TOKEN: WebSiteToken
 
 ###
 

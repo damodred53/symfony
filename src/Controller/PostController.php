@@ -58,6 +58,7 @@ final class PostController extends AbstractController
         return $this->json($data);
     }
 
+
     #[Route('', name: 'create', methods: ['POST'])]
     #[OA\Post(
         description: 'Crée un nouveau post pour un utilisateur.',
@@ -88,6 +89,11 @@ final class PostController extends AbstractController
     )]
     public function create(Request $request, ValidatorInterface $validator, EntityManagerInterface $em, UserRepository $userRepository): JsonResponse
     {
+
+
+
+
+
         $data = json_decode($request->getContent(), true);
         $dto = PostCreateDTO::fromArray($data);
 
@@ -382,5 +388,64 @@ final class PostController extends AbstractController
     public function showWithComments(Post $post): JsonResponse
     {
         return $this->json((new PostWithCommentsDTO($post))->toArray());
+    }
+
+    #[Route('/by-user/{id}', name: 'by_user', methods: ['GET'])]
+    #[OA\Get(
+        description: 'Retourne tous les posts d’un utilisateur spécifique avec commentaires et likes.',
+        summary: 'Posts d’un utilisateur (avec commentaires et likes)',
+        security: [['bearer' => []]],
+        parameters: [
+            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Liste des posts de l’utilisateur',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(
+                        properties: [
+                            new OA\Property(property: 'id', type: 'integer'),
+                            new OA\Property(property: 'content', type: 'string'),
+                            new OA\Property(property: 'createdAt', type: 'string', format: 'date-time'),
+                            new OA\Property(property: 'updatedAt', type: 'string', format: 'date-time'),
+                            new OA\Property(property: 'author', type: 'string'),
+                            new OA\Property(property: 'likeCount', type: 'integer'),
+                            new OA\Property(property: 'isLikedByCurrentUser', type: 'boolean'),
+                            new OA\Property(property: 'comments', type: 'array', items: new OA\Items(
+                                properties: [
+                                    new OA\Property(property: 'id', type: 'integer'),
+                                    new OA\Property(property: 'author', type: 'string'),
+                                    new OA\Property(property: 'content', type: 'string'),
+                                    new OA\Property(property: 'createdAt', type: 'string'),
+                                ],
+                                type: 'object'
+                            )),
+                        ],
+                        type: 'object'
+                    )
+                )
+            ),
+            new OA\Response(response: 404, description: 'Utilisateur non trouvé')
+        ]
+    )]
+    public function postsByUser(
+        int $id,
+        UserRepository $userRepository,
+        PostRepository $postRepository
+    ): JsonResponse {
+        $targetUser = $userRepository->find($id);
+
+        if (!$targetUser) {
+            return $this->json(['error' => 'Utilisateur non trouvé.'], 404);
+        }
+
+        $posts = $postRepository->findBy(['author' => $targetUser], ['createdAt' => 'DESC']);
+        $currentUser = $this->getUser();
+
+        $data = array_map(fn(Post $post) => (new PostFullDTO($post, $currentUser))->toArray(), $posts);
+
+        return $this->json($data);
     }
 }
