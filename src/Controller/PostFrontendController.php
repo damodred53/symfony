@@ -10,30 +10,56 @@ use Symfony\Component\Routing\Annotation\Route;
 
 final class PostFrontendController extends AbstractController
 {
-    private string $jwtToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE3NDc0MDQ3OTksImV4cCI6MTc0NzQwODM5OSwicm9sZXMiOlsiUk9MRV9BRE1JTiIsIlJPTEVfVVNFUiJdLCJ1c2VybmFtZSI6InRlc3QifQ.HiKOK3FQhn8JnLifczC1RnNyWgP_dyRsjVV_EJ_YHOiS4Xir9MyRb6mkeCLadSupoS1tu3yCHh1cdXJAmEtfEzD4VCpJ9QO3o67r34x77-5ynepXmmYW0_zCv3zDULNGR6CTAEYLI7crWCXBdIAMWR-pw04xLp10jEBWQoMU-IzMZszEEe4rrdCoFAXlBIFsb7dKfdqARCnlZoOagD7knRZZT817U1SfCuPvAi-KFmaOTSjxqlRE10TajUbYiMN9g0HOjkSvs-f_piMlWTiCA1bubg_Q7KECR0JYK-dLzZvelJx91jUF81jSHnnvXL-hbDCiSY5N37Ci5KBwKQvDt-QiO1DnkUh8zEkJpL5sw_9L__r0CBFZIUOEKKOSVloZAiIrsd5lqu2XV-HjwNeb-1SJXDGlVlhC4_APFvrZdahDXZPD6oamyr8xFGhNwbeVsjqA_9bBxBddgVZKHIWP7T3t2bZSxVkZq1JXDqGGcX4QzNRJ9wOrLdv-EwRNa-JWcvSeIa0CdQNcbA0sJjoZPB82hRjwGct9hRmbEfWRQJ20xp_uD6kNkPUz-SB5PSPb6Tqoe9vHrJ2M8DVSEyxNLzoum4P7MZpRS3rDVvAB_CeMzh-VwSs92nmjhxePoJyhvbkFyXEz-4puegn-kpYXG4QODDVVYDhiXRtf57OvsAs';
 
-    // Afficher la liste des posts
-    #[Route('/api/post/frontend', name: 'app_post_frontend')]
-    public function index(HttpClientInterface $client): Response
+    #[Route('/post/frontend', name: 'app_post_frontend')]
+    public function index(Request $request, HttpClientInterface $client): Response
     {
-        $response = $client->request('GET', 'http://localhost/api/jwt/posts');
-        $posts = $response->toArray();
+        $tokenJwt = $request->getSession()->get('jwt_token');
+        $tokenApi = $_ENV['BACKEND_AUTH_TOKEN'] ?? $_SERVER['BACKEND_AUTH_TOKEN'] ?? null;
+        $apiBaseUrl = $_ENV['API_URL'] ?? $_SERVER['API_URL'] ?? null;
+
+        if (!$tokenApi) {
+            throw new AccessDeniedHttpException('Token manquant.');
+        }
+
+
+        $response = $client->request('GET', $apiBaseUrl.'/api/jwt/posts', [
+            'headers' => [
+                'Accept' => 'application/json',
+                'X-API-TOKEN' => $tokenApi,
+                'Authorization' => 'Bearer ' . $tokenJwt,
+            ],
+        ]);
+
+        $posts = $response->toArray(false);
 
         return $this->render('post_frontend/index.html.twig', [
             'posts' => $posts,
         ]);
     }
 
-    #[Route('/api/post/frontend/create', name: 'app_post_frontend_create', methods: ['POST'])]
+
+    // Créer un nouveau post
+    #[Route('/post/frontend/create', name: 'app_post_frontend_create', methods: ['POST'])]
     public function create(HttpClientInterface $client, Request $request): Response
     {
         $content = $request->request->get('content');
+        $tokenJwt = $request->getSession()->get('jwt_token');
+        $tokenApi = $_ENV['BACKEND_AUTH_TOKEN'] ?? $_SERVER['BACKEND_AUTH_TOKEN'] ?? null;
+        $apiBaseUrl = $_ENV['API_URL'] ?? $_SERVER['API_URL'] ?? null;
+
         $errors = [];
 
         // On tente la création
         if ($content) {
-            $response = $client->request('POST', 'http://localhost/api/jwt/posts', [
-                'json' => ['content' => $content],
+            $response = $client->request('POST', $apiBaseUrl . '/api/jwt/posts', [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $tokenJwt,
+                    'X-API-TOKEN' => $tokenApi,
+                ],
+                'json' => [
+                    'content' => $content,
+                ],
             ]);
 
             if ($response->getStatusCode() === 201) {
@@ -63,10 +89,18 @@ final class PostFrontendController extends AbstractController
 
 
     // Supprimer un post
-    #[Route('/api/post/frontend/delete/{id}', name: 'app_post_frontend_delete', methods: ['POST'])]
-    public function delete(HttpClientInterface $client, int $id): Response
+    #[Route('/post/frontend/delete/{id}', name: 'app_post_frontend_delete', methods: ['POST'])]
+    public function delete(HttpClientInterface $client, int $id, Request $request): Response
     {
-        $response = $client->request('DELETE', 'http://localhost/api/jwt/posts/'.$id);
+        $tokenJwt = $request->getSession()->get('jwt_token');
+        $tokenApi = $_ENV['BACKEND_AUTH_TOKEN'] ?? $_SERVER['BACKEND_AUTH_TOKEN'] ?? null;
+        $apiBaseUrl = $_ENV['API_URL'] ?? $_SERVER['API_URL'] ?? null;
+        $response = $client->request('DELETE', $apiBaseUrl . '/api/jwt/posts/' . $id, [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $tokenJwt,
+                'X-API-TOKEN' => $tokenApi,
+            ],
+        ]);
 
         if ($response->getStatusCode() === 204) {
             return $this->redirectToRoute('app_post_frontend');
@@ -77,7 +111,7 @@ final class PostFrontendController extends AbstractController
         return $this->redirectToRoute('app_post_frontend');
     }
 
-    // Rechercher un post
+
     #[Route('/post/frontend/search', name: 'app_post_frontend_search', methods: ['GET'])]
     public function search(HttpClientInterface $client, Request $request): Response
     {
@@ -119,4 +153,22 @@ final class PostFrontendController extends AbstractController
 
         return $this->redirectToRoute('app_post_frontend_search', $query ? ['query' => $query] : []);
     }
+
+    #[Route('/post/frontend/{id}/show', name: 'app_post_frontend_show', methods: ['GET'])]
+    public function show(HttpClientInterface $client, int $id): Response
+    {
+        $response = $client->request('GET', "http://localhost/api/jwt/posts/{$id}/with-comments");
+
+        if ($response->getStatusCode() !== 200) {
+            throw $this->createNotFoundException("Post non trouvé.");
+        }
+
+        $data = $response->toArray();
+
+        return $this->render('post_frontend/show.html.twig', [
+            'post' => $data['post'],
+            'comments' => $data['comments']
+        ]);
+    }
+
 }

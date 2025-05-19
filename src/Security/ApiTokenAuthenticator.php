@@ -43,7 +43,7 @@ class ApiTokenAuthenticator extends AbstractAuthenticator
         $apiBearer = $request->headers->get('Authorization');
 
         if (!$apiToken) {
-            throw new AuthenticationException('No API token provided');
+            throw new AuthenticationException('No API token provided to access this resource : ' . $request->getPathInfo());
         }
 
         $tokenEntity = $this->tokenRepo->findOneBy(['token' => $apiToken]);

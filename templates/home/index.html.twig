@@ -1,22 +1,15 @@
 {% extends 'base.html.twig' %}
 
-{% block title %} Projet symfony M1 Twitter {% endblock %}
+{% block title %}Connexion{% endblock %}
 
-{%  block body  %}
-    <form>
-        <div class="mb-3">
-            <label for="exampleInputEmail1" class="form-label">Adresse email</label>
-            <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-            <div id="emailHelp" class="form-text">Nous gardons vos informations privées</div>
-        </div>
-        <div class="mb-3">
-            <label for="exampleInputPassword1" class="form-label">Mot de passe</label>
-            <input type="password" class="form-control" id="exampleInputPassword1">
-        </div>
-        <div class="mb-3 form-check">
-            <input type="checkbox" class="form-check-input" id="exampleCheck1">
-            <label class="form-check-label" for="exampleCheck1">Check me out</label>
-        </div>
-        <button type="submit" class="btn btn-primary">Envoyer</button>
-    </form>
+{% block body %}
+    <h2>Connexion</h2>
+
+    {% if message %}
+        <div class="alert alert-info">{{ message }}</div>
+    {% endif %}
+
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    {{ form_end(form) }}
 {% endblock %}
