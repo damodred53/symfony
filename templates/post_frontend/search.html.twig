@@ -18,41 +18,61 @@
         {% if posts is empty %}
             <p>Aucun post trouvé.</p>
         {% else %}
-            <ul>
+            <div class="row">
                 {% for post in posts %}
-                    <li>
-                        <strong>{{ post.author }}</strong> : {{ post.content }}
-                        ({{ post.likeCount }} likes)
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div class="d-flex flex-row align-items-center">
+                                    <img src="{{ asset('assets/logo_user.svg') }}"" alt="avatar" width="30"
+                                         height="30" class="rounded-circle me-2" />
+                                    <p class="mb-0 fw-bold">{{ post.author }}</p>
+                                </div>
+                                <div class="text-muted small">
+                                    {% if post.updatedAt is not empty %}
+                                        Modifié le {{ post.updatedAt }}
+                                    {% else %}
+                                        Créé le {{ post.createdAt }}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <hr>
+                            <p class="mb-2">{{ post.content }}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="text-muted small">
+                                    {{ post.likeCount }} likes
+                                </div>
+                                <form method="post" action="{{ path('post_like_api_proxy', { postId: post.id, query: query }) }}">
+                                    <button type="submit" class="btn btn-sm btn-outline-primary">
+                                        <i class="far fa-thumbs-up"></i> Like
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
 
-                        {% if post.updatedAt is not empty %}
-                            — Modifié le {{ post.updatedAt }}
-                        {% else %}
-                            — Créé le {{ post.createdAt }}
-                        {% endif %}
-
-                        {# Bouton Like / Unlike via formulaire #}
-                        <form method="post" action="{{ path('post_like_api_proxy', { postId: post.id, query: query }) }}">
-                            <button type="submit">Like</button>
-                        </form>
-
+                        <a href="{{ path('app_post_frontend_show', { id: post.id }) }}" class="btn btn-outline-primary mt-2">
+                            Voir les commentaires
+                        </a>
                         {# Commentaires #}
-                        {% if post.comments is defined and post.comments is not empty %}
-                            <ul>
-                                {% for comment in post.comments %}
-                                    <li>
-                                        <em>{{ comment.author }}</em> : {{ comment.content }}
-                                        {% if comment.createdAt is defined %}
-                                            — le {{ comment.createdAt }}
-                                        {% endif %}
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        {% else %}
-                            <p>Aucun commentaire.</p>
-                        {% endif %}
-                    </li>
+                        <div class="card-footer bg-light">
+                            {% if post.comments is defined and post.comments is not empty %}
+                                <ul class="list-unstyled mb-0">
+                                    {% for comment in post.comments %}
+                                        <li class="mb-2">
+                                            <em>{{ comment.author }}</em> : {{ comment.content }}
+                                            {% if comment.createdAt is defined %}
+                                                — <small class="text-muted">{{ comment.createdAt }}</small>
+                                            {% endif %}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p class="mb-0 text-muted">Aucun commentaire pour le moment.</p>
+                            {% endif %}
+                        </div>
+                    </div>
                 {% endfor %}
-            </ul>
+            </div>
         {% endif %}
     {% endif %}
 {% endblock %}

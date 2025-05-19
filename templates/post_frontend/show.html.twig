@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Commentaires du post #{{ post.id }}{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h2>Post de {{ post.author }}</h2>
+    <p>{{ post.content }}</p>
+    <p><small class="text-muted">Publié le {{ post.createdAt }}</small></p>
+
+    <hr>
+
+    <h4>Commentaires :</h4>
+    {% if comments is not empty %}
+        {% for comment in comments %}
+            <div class="border rounded p-2 mb-2">
+                <strong>{{ comment.author }}</strong> le {{ comment.createdAt }}<br>
+                {{ comment.content }}
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>Aucun commentaire pour ce post.</p>
+    {% endif %}
+
+    <a href="{{ path('app_post_frontend_search', { query: app.request.get('query') }) }}" class="btn btn-secondary mt-3">
+        Retour à la recherche
+    </a>
+</div>
+{% endblock %}

@@ -77,7 +77,7 @@ final class PostFrontendController extends AbstractController
         return $this->redirectToRoute('app_post_frontend');
     }
 
-    // Rechercher un post
+
     #[Route('/post/frontend/search', name: 'app_post_frontend_search', methods: ['GET'])]
     public function search(HttpClientInterface $client, Request $request): Response
     {
@@ -119,4 +119,22 @@ final class PostFrontendController extends AbstractController
 
         return $this->redirectToRoute('app_post_frontend_search', $query ? ['query' => $query] : []);
     }
+
+    #[Route('/post/frontend/{id}/show', name: 'app_post_frontend_show', methods: ['GET'])]
+    public function show(HttpClientInterface $client, int $id): Response
+    {
+        $response = $client->request('GET', "http://localhost/api/jwt/posts/{$id}/with-comments");
+
+        if ($response->getStatusCode() !== 200) {
+            throw $this->createNotFoundException("Post non trouvé.");
+        }
+
+        $data = $response->toArray();
+
+        return $this->render('post_frontend/show.html.twig', [
+            'post' => $data['post'],
+            'comments' => $data['comments']
+        ]);
+    }
+
 }
