@@ -14,7 +14,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 #[OA\Tag(name: "Users", description: "Operations about users")]
-#[Route('/api/user')]
+#[Route('/api/jwt/user')]
 final class UserController extends AbstractController
 {
     #[Route(name: 'app_user_index', methods: ['GET'])]

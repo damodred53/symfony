@@ -19,8 +19,7 @@ security:
             stateless: true
             json_login:
                 check_path: /api/login
-                username_path: username
-                password_path: password
+    
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
 
@@ -35,5 +34,5 @@ security:
         - { path: ^/api/jwt, roles: [ROLE_API_AND_JWT] }
         - {path: ^/api/jwt/token/add, 
               roles: ROLE_ADMIN }
-      #  - { path: ^/api, roles: ROLE_API }
+        - { path: ^/api, roles: ROLE_API }
 

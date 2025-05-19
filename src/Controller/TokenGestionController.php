@@ -32,7 +32,7 @@ final class TokenGestionController extends AbstractController
         path: '/api/jwt/token/add',
         description: 'Adds a new API token to the database. Requires authentication and "ROLE_ADMIN".',
         summary: 'Add a new API token',
-        security: [['bearer' => []]],
+        security: [['bearer' => [], 'apiToken' => []]],
         requestBody: new OA\RequestBody(
             description: 'JSON object containing token and service name.',
             required: true,
