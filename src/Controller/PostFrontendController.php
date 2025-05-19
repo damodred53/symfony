@@ -38,6 +38,12 @@ final class PostFrontendController extends AbstractController
         return $this->render('post_frontend/index.html.twig', [
             'posts' => $posts,
         ]);
+        return $this->render('post_frontend/show.html.twig', [
+            'post' => ['id' => $id], // éventuellement charger le post si besoin
+            'comments' => [], // ou rechargez les commentaires si nécessaire
+            'errors' => $errors,
+            'old_content' => $content,
+        ]);
     }
 
 
@@ -117,6 +123,9 @@ final class PostFrontendController extends AbstractController
     public function search(HttpClientInterface $client, Request $request): Response
     {
         $query = $request->query->get('query');
+        $tokenJwt = $request->getSession()->get('jwt_token');
+        $tokenApi = $_ENV['BACKEND_AUTH_TOKEN'] ?? $_SERVER['BACKEND_AUTH_TOKEN'] ?? null;
+        $apiBaseUrl = $_ENV['API_URL'] ?? $_SERVER['API_URL'] ?? null;
 
         $posts = [];
 
@@ -124,7 +133,7 @@ final class PostFrontendController extends AbstractController
             $response = $client->request('GET', 'http://localhost/api/jwt/posts/search', [
                 'query' => ['keyword' => $query],
                 'headers' => [
-                    'Authorization' => 'Bearer ' . $this->jwtToken,
+                    'Authorization' => 'Bearer ' . $tokenJwt,
                 ]
             ]);
 
@@ -171,7 +180,7 @@ final class PostFrontendController extends AbstractController
             'comments' => $data['comments']
         ]);
     }
-
+/*
     #[Route('/post/frontend/{id}/comment', name: 'app_post_frontend_add_comment', methods: ['POST'])]
     public function addComment(
         HttpClientInterface $client,
@@ -202,6 +211,7 @@ final class PostFrontendController extends AbstractController
         }
 
     }
+    /*
 
     #[Route('/posts/frontend', name: 'app_post_frontend', methods: ['GET'])]
 public function listWithCommentsAndLikes(HttpClientInterface $client): Response
@@ -233,7 +243,7 @@ public function listWithCommentsAndLikes(HttpClientInterface $client): Response
     return $this->render('post_frontend/index.html.twig', [
         'posts' => $posts,
     ]);
-}
+}*/
 
 
 }

@@ -28,7 +28,7 @@ final class HomeController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $token = $_ENV['BACKEND_AUTH_TOKEN'] ?? $_SERVER['BACKEND_AUTH_TOKEN'] ?? null;
-            var_dump($token);
+
             $json = json_encode($loginData);
               $client = HttpClient::create();
               $apiBaseUrl = $_ENV['API_URL'] ?? $_SERVER['API_URL'] ?? null;
