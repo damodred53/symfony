@@ -29,13 +29,14 @@ class CommentFrontendController extends AbstractController
 
         $tokenJwt = $request->getSession()->get('jwt_token');
         $tokenApi = $_ENV['BACKEND_AUTH_TOKEN'] ?? $_SERVER['BACKEND_AUTH_TOKEN'] ?? null;
+        $apiBaseUrl = $_ENV['API_URL'] ?? $_SERVER['API_URL'] ?? 'http://localhost';
 
         try {
-            $response = $httpClient->request('POST', 'http://localhost/api/jwt/comments', [
+            $response = $httpClient->request('POST', $apiBaseUrl . '/api/jwt/comments', [
                 'headers' => [
                     'Content-Type' => 'application/json',
                     'X-API-TOKEN' => $tokenApi,
-                    
+
                 ],
                 'json' => [
                     'postId' => (int)$postId,

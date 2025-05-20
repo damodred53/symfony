@@ -68,6 +68,7 @@ class ApiTokenAuthenticator extends AbstractAuthenticator
                 }
 
                 $roles[] = 'ROLE_API_AND_JWT';
+
             } catch (\Throwable $e) {
                 throw new AuthenticationException('JWT processing failed: ' . $e->getMessage());
             }
