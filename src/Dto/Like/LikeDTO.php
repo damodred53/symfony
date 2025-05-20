@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DTO;
+namespace App\Dto\Like;
 
 use App\Entity\Like;
 
