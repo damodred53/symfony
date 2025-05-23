@@ -163,15 +163,42 @@ final class UserController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_user_delete', methods: ['POST'])]
+    #[Route('/{id}', name: 'app_user_delete', methods: ['DELETE'])]
+    #[OA\Delete(
+        path: "/api/jwt/user/{id}",
+        summary: "Supprimer un utilisateur",
+        description: "Supprime un utilisateur existant par son ID.",
+        security: [["bearer" => [], "apiToken" => []]],
+        parameters: [
+            new OA\Parameter(
+                name: "id",
+                in: "path",
+                required: true,
+                description: "ID de l'utilisateur à supprimer",
+                schema: new OA\Schema(type: "integer")
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 204,
+                description: "Utilisateur supprimé avec succès"
+            ),
+            new OA\Response(
+                response: 403,
+                description: "Jeton CSRF invalide ou accès refusé"
+            ),
+            new OA\Response(
+                response: 404,
+                description: "Utilisateur non trouvé"
+            )
+        ]
+    )]
     // Idem : route CSRF de formulaire HTML, non exposée via Swagger REST
     public function delete(Request $request, User $user, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete' . $user->getId(), $request->getPayload()->getString('_token'))) {
-            $entityManager->remove($user);
-            $entityManager->flush();
-        }
+        $entityManager->remove($user);
+        $entityManager->flush();
 
-        return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
+        return new JsonResponse(null, JsonResponse::HTTP_NO_CONTENT); // 204
     }
 }

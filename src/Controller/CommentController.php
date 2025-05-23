@@ -22,7 +22,7 @@ final class CommentController extends AbstractController
     #[OA\Get(
         description: 'Retourne tous les commentaires.',
         summary: 'Liste des commentaires',
-        security: ['bearer' => [], 'apiKey' => []],
+        security: [['bearer' => [], 'apiToken' => []]],
         responses: [
             new OA\Response(
                 response: 200,
@@ -66,7 +66,7 @@ final class CommentController extends AbstractController
     #[OA\Post(
         description: 'Créer un nouveau commentaire.',
         summary: 'Créer un commentaire',
-        security: [['bearer' => []]],
+        security: [['bearer' => [], 'apiToken' => []]],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
@@ -101,7 +101,7 @@ final class CommentController extends AbstractController
             return $this->json(['error' => 'Post ID and Content are required'], 400);
         }
 
-        $user = $userRepository->findOneBy([]); 
+        $user = $userRepository->findOneBy([]);
         $post = $postRepository->find($postId);
 
         if (!$post) {
@@ -127,7 +127,7 @@ final class CommentController extends AbstractController
     #[OA\Get(
         description: 'Voir un commentaire par son ID.',
         summary: 'Voir un commentaire',
-        security: [['bearer' => []]],
+        security: [['bearer' => [], 'apiToken' => []]],
         parameters: [
             new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))
         ],
@@ -163,7 +163,7 @@ final class CommentController extends AbstractController
     #[OA\Patch(
         description: 'Modifier un commentaire existant.',
         summary: 'Modifier un commentaire',
-        security: [['bearer' => []]],
+        security: [['bearer' => [], 'apiToken' => []]],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
@@ -202,7 +202,7 @@ final class CommentController extends AbstractController
     #[OA\Delete(
         description: 'Supprimer un commentaire existant.',
         summary: 'Supprimer un commentaire',
-        security: [['bearer' => []]],
+        security: [['bearer' => [], 'apiToken' => []]],
         parameters: [
             new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))
         ],

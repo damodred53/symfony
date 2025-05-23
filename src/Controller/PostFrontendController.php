@@ -134,6 +134,7 @@ final class PostFrontendController extends AbstractController
                 'query' => ['keyword' => $query],
                 'headers' => [
                     'Authorization' => 'Bearer ' . $tokenJwt,
+                    'X-API-TOKEN' => $tokenApi,
                 ]
             ]);
 

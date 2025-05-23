@@ -89,11 +89,6 @@ final class PostController extends AbstractController
     )]
     public function create(Request $request, ValidatorInterface $validator, EntityManagerInterface $em, UserRepository $userRepository): JsonResponse
     {
-
-
-
-
-
         $data = json_decode($request->getContent(), true);
         $dto = PostCreateDTO::fromArray($data);
 

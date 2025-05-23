@@ -35,6 +35,7 @@ class CommentFrontendController extends AbstractController
             $response = $httpClient->request('POST', $apiBaseUrl . '/api/jwt/comments', [
                 'headers' => [
                     'Content-Type' => 'application/json',
+                    'Authorization' => 'Bearer ' . $tokenJwt,
                     'X-API-TOKEN' => $tokenApi,
 
                 ],

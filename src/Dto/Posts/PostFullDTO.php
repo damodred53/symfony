@@ -3,8 +3,9 @@
 namespace App\Dto\Posts;
 
 use App\Entity\Post;
-use App\Entity\User;
 use App\Dto\Comment\CommentDTO;
+use Symfony\Component\Security\Core\User\UserInterface;
+
 
 final class PostFullDTO
 {
@@ -19,8 +20,7 @@ final class PostFullDTO
     /** @var CommentDTO[] */
     public array $comments;
 
-    public function __construct(Post $post, ?User $currentUser = null)
-    {
+    public function __construct(Post $post, ?UserInterface $currentUser = null)    {
         $this->id = $post->getId();
         $this->content = $post->getContent();
         $this->createdAt = $post->getCreatedAt()?->format('Y-m-d H:i:s');
